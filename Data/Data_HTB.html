@@ -359,7 +359,7 @@ bash-5.1#</code></pre>
 
     <p>We now have a root privilege shell by running the command <code>bash</code> as the user root in the container we have enumerated at the start (Grafana container).</p>
 
-    <p>Since we have a root shell, lets add my public SSH key to the host filesystem by mounting the physical host filesystem. We found that the container isolation has been broken by a misconfiguration. <code>/dev/sda1</code> has been mounted to <code>/mnt</code> which is a host filesystem partition.</p>
+    <p>Since we have a root shell, lets add my public SSH key to the host filesystem. We found that the container isolation has been broken by a misconfiguration. <code>/dev/sda1</code> has been mounted to <code>/mnt</code> which is a host filesystem partition.</p>
 
     <pre><code>bash-5.1# mount /dev/sda1 /mnt
 
