@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Writeups - Thomas</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #0f1419;
+            color: #c5d1d8;
+        }
+        
+        h1 {
+            color: #9fef00;
+            border-bottom: 3px solid #9fef00;
+            padding-bottom: 15px;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #8b949e;
+            font-size: 1.1em;
+            margin-bottom: 40px;
+        }
+        
+        h2 {
+            color: #00d9ff;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .machine-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .machine-item {
+            padding: 20px;
+            margin: 15px 0;
+            background: #1a2332;
+            border-left: 4px solid #9fef00;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .machine-item:hover {
+            background: #1f2937;
+            border-left-color: #00d9ff;
+            transform: translateX(5px);
+        }
+        
+        .machine-item a {
+            color: #00d9ff;
+            text-decoration: none;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        
+        .machine-item a:hover {
+            color: #9fef00;
+        }
+        
+        .difficulty {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            margin-left: 15px;
+            font-weight: bold;
+        }
+        
+        .easy { background: #28a745; color: white; }
+        .medium { background: #ffa500; color: white; }
+        .hard { background: #dc3545; color: white; }
+        .insane { background: #6f42c1; color: white; }
+        
+        .description {
+            margin: 10px 0 0 0;
+            font-size: 0.95em;
+            color: #8b949e;
+            line-height: 1.6;
+        }
+        
+        .tags {
+            margin-top: 10px;
+        }
+        
+        .tag {
+            display: inline-block;
+            background: #2d3748;
+            color: #9fef00;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 0.8em;
+            margin-right: 8px;
+            margin-top: 5px;
+        }
+        
+        footer {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 2px solid #2d3748;
+            text-align: center;
+            color: #8b949e;
+        }
+        
+        .stats {
+            background: #1a2332;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 10px 20px;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            color: #9fef00;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            color: #8b949e;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 HackTheBox Writeups</h1>
+    <p class="subtitle">Educational penetration testing writeups and learning documentation</p>
+
+    <div class="stats">
+        <div class="stat-item">
+            <div class="stat-number">2</div>
+            <div class="stat-label">Machines Completed</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">0</div>
+            <div class="stat-label">Easy</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">2</div>
+            <div class="stat-label">Medium</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">0</div>
+            <div class="stat-label">Hard</div>
+        </div>
+    </div>
+
+    <h2>📦 Medium Machines</h2>
+    <ul class="machine-list">
+        <li class="machine-item">
+            <a href="medium/Data.html">Data</a>
+            <span class="difficulty medium">Medium</span>
+            <p class="description">
+                Web application exploitation focusing on PHP-CGI vulnerabilities and data exfiltration techniques.
+            </p>
+            <div class="tags">
+                <span class="tag">Web</span>
+                <span class="tag">PHP-CGI</span>
+                <span class="tag">CVE</span>
+            </div>
+        </li>
+        <li class="machine-item">
+            <a href="medium/GiveBack.html">GiveBack</a>
+            <span class="difficulty medium">Medium</span>
+            <p class="description">
+                WordPress plugin exploitation (CVE-2024-5932) leading to container escape and Kubernetes privilege escalation.
+            </p>
+            <div class="tags">
+                <span class="tag">WordPress</span>
+                <span class="tag">Kubernetes</span>
+                <span class="tag">Container Escape</span>
+                <span class="tag">CVE-2024-5932</span>
+            </div>
+        </li>
+    </ul>
+
+    <h2>🟢 Easy Machines</h2>
+    <ul class="machine-list">
+        <li class="machine-item" style="opacity: 0.6;">
+            <span style="color: #8b949e;">Coming soon...</span>
+        </li>
+    </ul>
+
+    <h2>🔴 Hard Machines</h2>
+    <ul class="machine-list">
+        <li class="machine-item" style="opacity: 0.6;">
+            <span style="color: #8b949e;">Coming soon...</span>
+        </li>
+    </ul>
+
+    <h2>🟣 Insane Machines</h2>
+    <ul class="machine-list">
+        <li class="machine-item" style="opacity: 0.6;">
+            <span style="color: #8b949e;">Coming soon...</span>
+        </li>
+    </ul>
+
+    <footer>
+        <p>⚠️ All writeups are for educational purposes only. Never attack systems without proper authorization.</p>
+        <p style="margin-top: 10px;">Written by <strong style="color: #9fef00;">Thomas</strong> | 2025</p>
+        <p style="margin-top: 10px; font-size: 0.9em;">
+            <a href="https://github.com/YOUR_USERNAME/htb-writeups" style="color: #00d9ff; text-decoration: none;">
+                View on GitHub →
+            </a>
+        </p>
+    </footer>
+</body>
+</html>

