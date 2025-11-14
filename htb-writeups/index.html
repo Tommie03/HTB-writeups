@@ -3,222 +3,391 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTB Writeups - Thomas</title>
+    <title>Tommie03's HTB Writeups</title>
     <style>
+        /* ========================================
+           HACK THE BOX WRITEUP THEME
+           ======================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Courier New', monospace;
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 40px 20px;
             background: #0f1419;
             color: #c5d1d8;
+            font-family: 'Segoe UI', 'Ubuntu', 'Roboto', sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 40px 30px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
-        
-        h1 {
-            color: #9fef00;
-            border-bottom: 3px solid #9fef00;
-            padding-bottom: 15px;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        
-        .subtitle {
-            color: #8b949e;
-            font-size: 1.1em;
-            margin-bottom: 40px;
-        }
-        
-        h2 {
-            color: #00d9ff;
-            margin-top: 40px;
-            margin-bottom: 20px;
-            font-size: 1.8em;
-        }
-        
-        .machine-list {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .machine-item {
-            padding: 20px;
-            margin: 15px 0;
-            background: #1a2332;
-            border-left: 4px solid #9fef00;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
-        
-        .machine-item:hover {
-            background: #1f2937;
-            border-left-color: #00d9ff;
-            transform: translateX(5px);
-        }
-        
-        .machine-item a {
-            color: #00d9ff;
-            text-decoration: none;
-            font-size: 1.3em;
-            font-weight: bold;
-        }
-        
-        .machine-item a:hover {
-            color: #9fef00;
-        }
-        
-        .difficulty {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 0.85em;
-            margin-left: 15px;
-            font-weight: bold;
-        }
-        
-        .easy { background: #28a745; color: white; }
-        .medium { background: #ffa500; color: white; }
-        .hard { background: #dc3545; color: white; }
-        .insane { background: #6f42c1; color: white; }
-        
-        .description {
-            margin: 10px 0 0 0;
-            font-size: 0.95em;
-            color: #8b949e;
-            line-height: 1.6;
-        }
-        
-        .tags {
-            margin-top: 10px;
-        }
-        
-        .tag {
-            display: inline-block;
-            background: #2d3748;
-            color: #9fef00;
-            padding: 3px 10px;
-            border-radius: 3px;
-            font-size: 0.8em;
-            margin-right: 8px;
-            margin-top: 5px;
-        }
-        
-        footer {
-            margin-top: 60px;
-            padding-top: 30px;
-            border-top: 2px solid #2d3748;
+
+        /* Header */
+        .header {
             text-align: center;
-            color: #8b949e;
+            margin-bottom: 3em;
         }
-        
-        .stats {
+
+        .root-banner {
+            background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
+            border: 2px solid #9fef00;
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 2em;
+            box-shadow: 0 8px 16px rgba(159, 239, 0, 0.1);
+        }
+
+        .root-banner h1 {
+            color: #9fef00;
+            font-size: 3em;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 0.5em;
+            text-shadow: 0 0 20px rgba(159, 239, 0, 0.3);
+        }
+
+        .root-banner .prompt {
+            color: #9fef00;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            margin-bottom: 1em;
+        }
+
+        .root-banner p {
+            color: #c5d1d8;
+            font-size: 1.1em;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        /* Latest Writeup Section */
+        .latest-section {
             background: #1a2332;
-            padding: 20px;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #00d9ff;
             border-radius: 8px;
-            margin: 30px 0;
+            padding: 30px;
+            margin-bottom: 3em;
+        }
+
+        .latest-section h2 {
+            color: #00d9ff;
+            font-size: 1.8em;
+            margin-bottom: 1em;
             display: flex;
-            justify-content: space-around;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .latest-section h2::before {
+            content: "⚡";
+            font-size: 1.2em;
+        }
+
+        .box-card {
+            background: #0f1419;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .box-card:hover {
+            border-color: #9fef00;
+            box-shadow: 0 4px 12px rgba(159, 239, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .box-card h3 {
+            color: #9fef00;
+            font-size: 1.5em;
+            margin-bottom: 0.5em;
+        }
+
+        .box-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 1em;
             flex-wrap: wrap;
         }
-        
-        .stat-item {
-            text-align: center;
-            padding: 10px 20px;
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
         }
-        
-        .stat-number {
-            font-size: 2em;
+
+        .badge-easy {
+            background: #50a14f;
+            color: #fff;
+        }
+
+        .badge-medium {
+            background: #ffb86c;
+            color: #0f1419;
+        }
+
+        .badge-hard {
+            background: #ff5555;
+            color: #fff;
+        }
+
+        .badge-insane {
+            background: #bd93f9;
+            color: #fff;
+        }
+
+        .badge-linux {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            color: #c5d1d8;
+        }
+
+        .box-card p {
+            color: #a3b3bc;
+            margin-bottom: 1em;
+        }
+
+        .read-more {
+            color: #00d9ff;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .read-more:hover {
             color: #9fef00;
-            font-weight: bold;
         }
-        
-        .stat-label {
-            color: #8b949e;
+
+        .read-more::after {
+            content: "→";
+        }
+
+        /* Categories Section */
+        .categories {
+            margin-top: 3em;
+        }
+
+        .category-title {
+            color: #9fef00;
+            font-size: 2em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1.5em;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #9fef00;
+        }
+
+        .difficulty-section {
+            margin-bottom: 3em;
+        }
+
+        .difficulty-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 1.5em;
+        }
+
+        .difficulty-header h3 {
+            color: #00d9ff;
+            font-size: 1.5em;
+            margin: 0;
+        }
+
+        .box-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .box-item {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .box-item:hover {
+            border-color: #9fef00;
+            box-shadow: 0 4px 12px rgba(159, 239, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .box-item h4 {
+            color: #9fef00;
+            font-size: 1.2em;
+            margin-bottom: 0.5em;
+        }
+
+        .box-item .date {
+            color: #5c6773;
             font-size: 0.9em;
-            margin-top: 5px;
+            margin-bottom: 0.5em;
+        }
+
+        .box-item .description {
+            color: #a3b3bc;
+            font-size: 0.95em;
+            margin-top: 0.5em;
+        }
+
+        /* Empty State */
+        .empty-state {
+            background: #1a2332;
+            border: 2px dashed #2d3748;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            color: #5c6773;
+            font-style: italic;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 4em;
+            padding-top: 2em;
+            border-top: 1px solid #2d3748;
+            color: #5c6773;
+        }
+
+        .footer a {
+            color: #00d9ff;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: #9fef00;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a2332;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #9fef00;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8dd900;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .root-banner h1 {
+                font-size: 2em;
+            }
+
+            .box-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>🎯 HackTheBox Writeups</h1>
-    <p class="subtitle">Educational penetration testing writeups and learning documentation</p>
-
-    <div class="stats">
-        <div class="stat-item">
-            <div class="stat-number">2</div>
-            <div class="stat-label">Machines Completed</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-number">0</div>
-            <div class="stat-label">Easy</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-number">2</div>
-            <div class="stat-label">Medium</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-number">0</div>
-            <div class="stat-label">Hard</div>
+    <div class="header">
+        <div class="root-banner">
+            <div class="prompt">root@netrunnersden:~#</div>
+            <h1>🎯 Congratulations!</h1>
+            <p>You've found root! Welcome to my collection of HackTheBox writeups. Here I document my journey through various boxes, sharing techniques, exploits, and lessons learned along the way. From enumeration to privilege escalation, explore detailed walkthroughs of my HTB conquests.</p>
         </div>
     </div>
 
-    <h2>📦 Medium Machines</h2>
-    <ul class="machine-list">
-        <li class="machine-item">
-            <a href="medium/Data.html">Data</a>
-            <span class="difficulty medium">Medium</span>
-            <p class="description">
-                Web application exploitation focusing on PHP-CGI vulnerabilities and data exfiltration techniques.
-            </p>
-            <div class="tags">
-                <span class="tag">Web</span>
-                <span class="tag">PHP-CGI</span>
-                <span class="tag">CVE</span>
+    <!-- Latest Writeup -->
+    <div class="latest-section">
+        <h2>Latest Writeup</h2>
+        <div class="box-card" onclick="window.location.href='Data_HTB.html'">
+            <h3>Data</h3>
+            <div class="box-meta">
+                <span class="badge badge-easy">Easy</span>
+                <span class="badge badge-linux">Linux</span>
+                <span class="date">Completed: December 11, 2025</span>
             </div>
-        </li>
-        <li class="machine-item">
-            <a href="medium/GiveBack.html">GiveBack</a>
-            <span class="difficulty medium">Medium</span>
-            <p class="description">
-                WordPress plugin exploitation (CVE-2024-5932) leading to container escape and Kubernetes privilege escalation.
-            </p>
-            <div class="tags">
-                <span class="tag">WordPress</span>
-                <span class="tag">Kubernetes</span>
-                <span class="tag">Container Escape</span>
-                <span class="tag">CVE-2024-5932</span>
+            <p>Exploited an outdated Grafana instance using directory traversal (CVE-2024-43798) to extract credentials. Leveraged misconfigured Docker privileges for container escape and achieved root access misconfigured mounting of the host filesystem.</p>
+            <a href="Data_HTB.html" class="read-more">Read Full Writeup</a>
+        </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="categories">
+        <h2 class="category-title">All Writeups</h2>
+
+        <!-- Easy Boxes -->
+        <div class="difficulty-section">
+            <div class="difficulty-header">
+                <h3>🟢 Easy</h3>
+                <span class="badge badge-easy">1 Box</span>
             </div>
-        </li>
-    </ul>
+            <div class="box-grid">
+                <div class="box-item" onclick="window.location.href='Data_HTB.html'">
+                    <h4>Data</h4>
+                    <div class="box-meta">
+                        <span class="badge badge-linux">Linux</span>
+                    </div>
+                    <div class="date">December 11, 2025</div>
+                    <div class="description">Grafana directory traversal → Docker container escape</div>
+                </div>
+            </div>
+        </div>
 
-    <h2>🟢 Easy Machines</h2>
-    <ul class="machine-list">
-        <li class="machine-item" style="opacity: 0.6;">
-            <span style="color: #8b949e;">Coming soon...</span>
-        </li>
-    </ul>
+        <!-- Medium Boxes -->
+        <div class="difficulty-section">
+            <div class="difficulty-header">
+                <h3>🟡 Medium</h3>
+                <span class="badge badge-medium">0 Boxes</span>
+            </div>
+            <div class="empty-state">
+                <p>No medium boxes completed yet. Coming soon!</p>
+            </div>
+        </div>
 
-    <h2>🔴 Hard Machines</h2>
-    <ul class="machine-list">
-        <li class="machine-item" style="opacity: 0.6;">
-            <span style="color: #8b949e;">Coming soon...</span>
-        </li>
-    </ul>
+        <!-- Hard Boxes -->
+        <div class="difficulty-section">
+            <div class="difficulty-header">
+                <h3>🔴 Hard</h3>
+                <span class="badge badge-hard">0 Boxes</span>
+            </div>
+            <div class="empty-state">
+                <p>No hard boxes completed yet. The challenge awaits!</p>
+            </div>
+        </div>
 
-    <h2>🟣 Insane Machines</h2>
-    <ul class="machine-list">
-        <li class="machine-item" style="opacity: 0.6;">
-            <span style="color: #8b949e;">Coming soon...</span>
-        </li>
-    </ul>
+        <!-- Insane Boxes -->
+        <div class="difficulty-section">
+            <div class="difficulty-header">
+                <h3>🟣 Insane</h3>
+                <span class="badge badge-insane">0 Boxes</span>
+            </div>
+            <div class="empty-state">
+                <p>No insane boxes completed yet. Stay tuned for the ultimate challenges!</p>
+            </div>
+        </div>
+    </div>
 
-    <footer>
-        <p>⚠️ All writeups are for educational purposes only. Never attack systems without proper authorization.</p>
-        <p style="margin-top: 10px;">Written by <strong style="color: #9fef00;">Thomas</strong> | 2025</p>
-        <p style="margin-top: 10px; font-size: 0.9em;">
-            <a href="https://github.com/YOUR_USERNAME/htb-writeups" style="color: #00d9ff; text-decoration: none;">
-                View on GitHub →
-            </a>
-        </p>
-    </footer>
+    <div class="footer">
+        <p>Made with skill by <strong>Tommie03</strong></p>
+        <p>Happy Hacking! | <a href="https://www.hackthebox.com" target="_blank">HackTheBox</a></p>
+    </div>
 </body>
 </html>
