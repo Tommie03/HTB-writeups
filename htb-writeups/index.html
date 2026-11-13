@@ -151,6 +151,12 @@
             color: #c5d1d8;
         }
 
+        .badge-windows {
+            background: #1a2332;
+            border: 1px solid #00d9ff;
+            color: #c5d1d8;
+        }
+
         .box-card p {
             color: #a3b3bc;
             margin-bottom: 1em;
@@ -317,15 +323,15 @@
     <!-- Latest Writeup -->
     <div class="latest-section">
         <h2>Latest Writeup</h2>
-        <div class="box-card" onclick="window.location.href='easy/images/Data/Data_HTB.html'">
-            <h3>Data</h3>
+        <div class="box-card" onclick="window.location.href='easy/images/Dog/Dog_HTB.html'">
+            <h3>Dog</h3>
             <div class="box-meta">
                 <span class="badge badge-easy">Easy</span>
                 <span class="badge badge-linux">Linux</span>
-                <span class="date">Completed: November 11, 2025</span>
+                <span class="date">Completed: October 29, 2026</span>
             </div>
-            <p>Exploited an outdated Grafana instance using directory traversal (CVE-2024-43798) to extract credentials. Leveraged misconfigured Docker privileges for container escape and achieved root access misconfigured mounting of the host filesystem.</p>
-            <a href="easy/images/Data/Data_HTB.html" class="read-more">Read Full Writeup</a>
+            <p>Found an exposed .git repository leaking the site's source and a reused MySQL password. Logged in as tiffany and abused an authenticated RCE in Backdrop CMS 1.27.1 to drop a webshell, then reused the password over SSH for the user flag. Escalated to root by abusing the bee CLI tool permitted via sudo.</p>
+            <a href="easy/images/Dog/Dog_HTB.html" class="read-more">Read Full Writeup</a>
         </div>
     </div>
 
@@ -337,9 +343,49 @@
         <div class="difficulty-section">
             <div class="difficulty-header">
                 <h3>🟢 Easy</h3>
-                <span class="badge badge-easy">1 Box</span>
+                <span class="badge badge-easy">7 Boxes</span>
             </div>
             <div class="box-grid">
+                <div class="box-item" onclick="window.location.href='easy/images/Dog/Dog_HTB.html'">
+                    <h4>Dog</h4>
+                    <div class="box-meta">
+                        <span class="badge badge-linux">Linux</span>
+                    </div>
+                    <div class="date">October 29, 2026</div>
+                    <div class="description">Exposed .git leak → Backdrop CMS 1.27.1 RCE → bee sudo to root</div>
+                </div>
+                <div class="box-item" onclick="window.location.href='easy/images/Keeper/Keeper_HTB.html'">
+                    <h4>Keeper</h4>
+                    <div class="box-meta">
+                        <span class="badge badge-linux">Linux</span>
+                    </div>
+                    <div class="date">September 1, 2026</div>
+                    <div class="description">Request Tracker default creds → KeePass CVE-2023-32784 → root PuTTY key</div>
+                </div>
+                <div class="box-item" onclick="window.location.href='easy/images/Netmon/Netmon_HTB.html'">
+                    <h4>Netmon</h4>
+                    <div class="box-meta">
+                        <span class="badge badge-windows">Windows</span>
+                    </div>
+                    <div class="date">June 26, 2026</div>
+                    <div class="description">Anonymous FTP config leak → PRTG CVE-2018-9276 as SYSTEM</div>
+                </div>
+                <div class="box-item" onclick="window.location.href='easy/images/Codify/Codify_HTB.html'">
+                    <h4>Codify</h4>
+                    <div class="box-meta">
+                        <span class="badge badge-linux">Linux</span>
+                    </div>
+                    <div class="date">June 25, 2026</div>
+                    <div class="description">vm2 sandbox escape (CVE-2023-30547) → bash-script flaw to root</div>
+                </div>
+                <div class="box-item" onclick="window.location.href='easy/images/Retro/Retro_HTB.html'">
+                    <h4>Retro</h4>
+                    <div class="box-meta">
+                        <span class="badge badge-windows">Windows</span>
+                    </div>
+                    <div class="date">February 2026</div>
+                    <div class="description">AD: trainee creds → Pre-Win2000 account → ADCS ESC1 to Domain Admin</div>
+                </div>
                 <div class="box-item" onclick="window.location.href='easy/images/Data/Data_HTB.html'">
                     <h4>Data</h4>
                     <div class="box-meta">
@@ -348,6 +394,13 @@
                     <div class="date">November 11, 2025</div>
                     <div class="description">Grafana directory traversal → Docker container escape</div>
                 </div>
+                <div class="box-item" onclick="window.location.href='easy/images/Expressway/Expressway_HTB.html'">
+                    <h4>Expressway</h4>
+                    <div class="box-meta">
+                        <span class="badge badge-linux">Linux</span>
+                    </div>
+                    <div class="description">IKE aggressive-mode PSK crack → sudo 1.9.17 (CVE-2025-32463) to root</div>
+                </div>
             </div>
         </div>
 
@@ -355,10 +408,25 @@
         <div class="difficulty-section">
             <div class="difficulty-header">
                 <h3>🟡 Medium</h3>
-                <span class="badge badge-medium">0 Boxes</span>
+                <span class="badge badge-medium">2 Boxes</span>
             </div>
-            <div class="empty-state">
-                <p>No medium boxes completed yet. Coming soon!</p>
+            <div class="box-grid">
+                <div class="box-item" onclick="window.location.href='medium/images/Gavel/Gavel_HTB.html'">
+                    <h4>Gavel</h4>
+                    <div class="box-meta">
+                        <span class="badge badge-linux">Linux</span>
+                    </div>
+                    <div class="date">January 2026</div>
+                    <div class="description">Exposed .git → SQLi + PHP code injection → YAML daemon two-stage SUID bash to root</div>
+                </div>
+                <div class="box-item" onclick="window.location.href='medium/images/Outbound/Outbound_HTB.html'">
+                    <h4>Outbound</h4>
+                    <div class="box-meta">
+                        <span class="badge badge-linux">Linux</span>
+                    </div>
+                    <div class="date">2026</div>
+                    <div class="description">Roundcube RCE (CVE-2025-49113) → Below symlink race (TOCTOU) to root</div>
+                </div>
             </div>
         </div>
 
