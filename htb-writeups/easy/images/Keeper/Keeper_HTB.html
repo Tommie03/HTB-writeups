@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keeper - HackTheBox Writeup</title>
+    <style>
+        /* ========================================
+           HACK THE BOX WRITEUP THEME
+           ======================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0f1419;
+            color: #c5d1d8;
+            font-family: 'Segoe UI', 'Ubuntu', 'Roboto', sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 40px 30px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+
+        /* Headings */
+        h1, h2, h3 {
+            color: #9fef00;
+            font-weight: 600;
+            margin-top: 2em;
+            margin-bottom: 0.8em;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            border-bottom: 3px solid #9fef00;
+            padding-bottom: 15px;
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-left: 4px solid #9fef00;
+            padding-left: 15px;
+            margin-top: 2.5em;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            color: #00d9ff;
+            margin-top: 1.8em;
+        }
+
+        h4 {
+            font-size: 1.1em;
+            color: #00d9ff;
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+        }
+
+        /* Paragraphs */
+        p {
+            margin-bottom: 1.2em;
+            color: #c5d1d8;
+        }
+
+        /* Strong/Bold */
+        strong {
+            color: #9fef00;
+            font-weight: 600;
+        }
+
+        /* Links */
+        a {
+            color: #00d9ff;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            color: #9fef00;
+            border-bottom: 1px solid #9fef00;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #00d9ff;
+            padding: 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .info-box p {
+            margin: 0.5em 0;
+        }
+
+        .info-box strong {
+            color: #00d9ff;
+        }
+
+        /* Code blocks */
+        pre {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 1.5em 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        code {
+            font-family: 'Courier New', 'Consolas', monospace;
+            font-size: 0.9em;
+            color: #9fef00;
+        }
+
+        /* Inline code */
+        p code, li code {
+            background: #1a2332;
+            color: #9fef00;
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid #2d3748;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: #c5d1d8;
+        }
+
+        li {
+            margin-bottom: 0.5em;
+        }
+
+        /* Images */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #2d3748;
+            margin: 1.5em 0;
+            display: block;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Image placeholder for missing images */
+        .img-placeholder {
+            background: #1a2332;
+            border: 2px dashed #2d3748;
+            border-radius: 8px;
+            padding: 40px;
+            margin: 1.5em 0;
+            text-align: center;
+            color: #5c6773;
+            font-style: italic;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #2d3748;
+        }
+
+        th {
+            background: #1f2937;
+            color: #9fef00;
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: #1f2937;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a2332;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #9fef00;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8dd900;
+        }
+
+        /* Special styling for specific sections */
+        .command-output {
+            color: #a3b3bc;
+        }
+
+        .redacted {
+            color: #ff79c6;
+            font-weight: bold;
+        }
+
+        /* Header banner */
+        .header-banner {
+            background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 2em;
+            text-align: center;
+        }
+
+        .header-banner h1 {
+            margin: 0;
+            border: none;
+            padding: 0;
+        }
+
+        .header-banner p {
+            color: #9fef00;
+            font-size: 1.1em;
+            margin: 10px 0 0 0;
+        }
+
+        /* Highlight boxes */
+        .highlight {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .highlight strong {
+            color: #ffc107;
+        }
+
+        .success {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #28a745;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .success strong {
+            color: #28a745;
+        }
+
+        .warning {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #dc3545;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .warning strong {
+            color: #dc3545;
+        }
+
+        /* Step boxes */
+        .step {
+            background: #1a2332;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #00d9ff;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 8px;
+        }
+
+        .step h4 {
+            margin-top: 0;
+            color: #00d9ff;
+        }
+
+        /* Author footer */
+        .author {
+            text-align: center;
+            margin-top: 3em;
+            padding-top: 2em;
+            border-top: 1px solid #2d3748;
+            color: #5c6773;
+            font-style: italic;
+        }
+    
+        /* Screenshot slot wrapper (added for repo build) */
+        .shot { margin: 1.5em 0; }
+        .shot img { margin: 0; }
+</style>
+</head>
+<body>
+    <div class="header-banner">
+        <h1>Keeper</h1>
+        <p>HackTheBox Writeup</p>
+    </div>
+
+    <div class="info-box">
+        <p><strong>Box Name:</strong> Keeper</p>
+        <p><strong>Difficulty:</strong> Easy</p>
+        <p><strong>OS:</strong> Linux</p>
+        <p><strong>Date Completed:</strong> 01-09-2026</p>
+        <p><strong>IP Address:</strong> 10.129.57.200</p>
+    </div>
+
+    <h2>Summary</h2>
+    <p>Enumerating the box showed two ports being open. After further searching on port 80 we get redirected to a different subdomain. On here we can do some clever research to login onto the subdomain and access info about users. After collecting the right info on the users we can login and grab User Flag. Escalating privileges required searching the user directory to find a KeePass file dump. Using CVE-2023-32784 I manage to get a password. This password is able to unlock the passcode file of KeePass. Searching in the passcode file I find a root puttygen key. After converting this to SSH, I can login using the Root SSH and grab Root Flag.</p>
+    <h2>Enumeration</h2>
+    <h3>Nmap Scan</h3>
+    <pre><code>nmap -sC -sV -T4 10.129.57.200</code></pre>
+    <pre><code>PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.9p1 Ubuntu 3ubuntu0.3 (Ubuntu Linux; protocol 2.0)
+80/tcp open  http    nginx 1.18.0 (Ubuntu)
+|_http-title: Site doesn't have a title (text/html).</code></pre>
+    <p><strong>Results:</strong></p>
+    <ul>
+        <li>Port 22: SSH</li>
+        <li>Port 80: HTTP</li>
+    </ul>
+    <h3>HTTP Enumeration</h3>
+    <p>The nmap result showed port 80 to be open. After adding the hostname to my hosts file I can visit the website.</p>
+    <div class="shot">
+        <img src="keeper_01.png" alt="keeper.htb landing page with support ticket link"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>keeper_01.png</code><br>keeper.htb landing page with support ticket link</div>
+    </div>
+    <p>I immediately get greeted by a redirect to another website. I add this subdomain (<code>tickets.keeper.htb</code>) to my hosts file and visit the subdomain.</p>
+    <div class="shot">
+        <img src="keeper_02.png" alt="Request Tracker login page"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>keeper_02.png</code><br>Request Tracker login page</div>
+    </div>
+    <p>The subdomain seems to be a ticketing system. Versions are clearly shown. When researching the Request Tracker for any vulnerabilities for version 4.4.4+dfsg-2ubuntu1, no results came up.</p>
+    <p>Further research showed that default installation comes with default credentials for the portal. These worked and I can login the portal.</p>
+    <div class="shot">
+        <img src="keeper_03.png" alt="Request Tracker dashboard after login"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>keeper_03.png</code><br>Request Tracker dashboard after login</div>
+    </div>
+    <h3>User Enumeration</h3>
+    <div class="shot">
+        <img src="keeper_04.png" alt="Privileged users list showing lnorgaard"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>keeper_04.png</code><br>Privileged users list showing lnorgaard</div>
+    </div>
+    <p>When clicking through the portal, I found a user tab with the following user: <code>lnorgaard</code>.</p>
+    <p>When clicking on the user it shows an overview of the user. In the notes below it also shows a default password being used. This can be tried to login using SSH.</p>
+    <div class="shot">
+        <img src="keeper_05.png" alt="User profile for lnorgaard showing initial password in comments"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>keeper_05.png</code><br>User profile for lnorgaard showing initial password in comments</div>
+    </div>
+    <h3>User flag</h3>
+    <p>Logging in with the user and password found from the portal worked and I can grab the User Flag.</p>
+    <pre><code>ssh lnorgaard@10.129.57.200
+lnorgaard@10.129.57.200's password:
+Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-78-generic x86_64)
+
+lnorgaard@keeper:~$ cat user.txt
+96ddafbff0c00242648ad359745e6a77</code></pre>
+    <h2>Privilege Escalation / Initial access</h2>
+    <h3>Enumeration</h3>
+    <pre><code>lnorgaard@keeper:~$ ls
+RT30000.zip  user.txt</code></pre>
+    <p>Checking the home directory of the user I found a zip file. I transfer this zip file to my own box for further research.</p>
+    <h3>KeePass Dump File</h3>
+    <p>Extracting the zip file gives me 2 files:</p>
+    <pre><code>└──╼ [★]$ unzip RT30000.zip
+Archive:  RT30000.zip
+  inflating: KeePassDumpFull.dmp
+ extracting: passcodes.kdbx</code></pre>
+    <p>This clearly shows to be a file dump of a KeePass database.</p>
+    <h3>KeePass CVE-2023-32784</h3>
+    <p>Researching on finding a way to look into the passcode file I find the following CVE: <code>CVE-2023-32784</code>. It explains that the typed-in password for both master password and password entries gets saved to memory. Every last character gets saved, so if you can dump the entire memory cache, you can read/guess the password.</p>
+    <p>I used the following repo to dump the master password from the <code>KeePassDumpFull.dmp</code>: <code>https://github.com/vdohney/keepass-password-dumper</code>.</p>
+    <h3>Exploitation and root flag</h3>
+    <p>Using the KeePass CVE PoC to dump the master password, I get a set of candidate characters per position.</p>
+    <pre><code>──╼ [★]$ dotnet run ~/KeePassDumpFull.dmp
+...
+Combined: ●{ø, Ï, ,, l, `, -, ', ], §, A, I, :, =, _, c, M}dgrød med fløde</code></pre>
+    <p>The password that the PoC has guessed is <strong>dgrød med fløde</strong>. However when using this password, it does not grant access to the passcode file.</p>
+    <p>Further research on Google gave a suggestion what the password might be. This was also hinted when checking the user profile — Lisa Nørgaard and the language being Danish.</p>
+    <div class="shot">
+        <img src="keeper_06.png" alt="Google search suggesting rødgrød med fløde"
+             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>keeper_06.png</code><br>Google search suggesting rødgrød med fløde</div>
+    </div>
+    <p>This screenshot shows the suggested complete word should be <strong>rødgrød med fløde</strong>.</p>
+    <p>Trying this password for the passcode file works and we can access the file and read its contents.</p>
+    <pre><code>kpcli:/&gt; open passcodes.kdbx
+Provide the master password: *************************
+kpcli:/&gt; cd passcodes/Network/
+kpcli:/passcodes/Network&gt; ls
+=== Entries ===
+0. keeper.htb (Ticketing Server)
+1. Ticketing System</code></pre>
+    <p>Enumerating the contents further gives a good result. The <code>keeper.htb (Ticketing Server)</code> entry holds an unencrypted PuTTY-User-Key-File-3 for the <code>root</code> user.</p>
+    <p>It is possible to convert the puttygen key file to a usable OpenSSH key file. First I save the complete keyfile to a <code>.ppk</code> file and use the puttygen tool to convert it to OpenSSH.</p>
+    <pre><code>└──╼ [★]$ puttygen root.ppk -O private-openssh -o id_rsa</code></pre>
+    <p>After I converted the key file I gave it the proper permissions for an SSH keyfile and tried to login as root using the newly converted SSH keyfile.</p>
+    <pre><code>└──╼ [★]$ ssh -i id_rsa root@10.129.57.200
+Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-78-generic x86_64)
+
+root@keeper:~# cat /root/root.txt
+fce4e0823b7873ffc6220858a048d7d1</code></pre>
+    <p>The converted keyfile worked and I am in as root. The box has been compromised.</p>
+    <h2>Key Takeaways</h2>
+    <ul>
+        <li>Default credentials for both admin portals and users can be a serious security risk, allowing easy access.</li>
+        <li>Password manager dump files must never be stored on a regular user profile and should be placed in a restricted folder.</li>
+        <li>CVE research can be crucial in finding a way into a system — in this case the CVE allowed for reading key files to the root account.</li>
+    </ul>
+    <h2>Tools Used</h2>
+    <ul>
+        <li>Nmap</li>
+        <li>PoC CVE-2023-32784</li>
+        <li>KPCLI</li>
+        <li>DotNet</li>
+        <li>PuttyGen</li>
+    </ul>
+
+    <div class="author">
+        <p>Author: Tommie03</p>
+    </div>
+</body>
+</html>

